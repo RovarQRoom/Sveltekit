@@ -4,7 +4,7 @@
   import { employeesHandlers} from "../../store/employees.store";
   import { Label, Input, Fileupload, Button, Select, Avatar } from 'flowbite-svelte'
 	import { authStore } from "../../store/store";
-  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "" };
+  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
 
   let gender = [
@@ -21,7 +21,8 @@
         employee.phone,
         employee.address,
         employee.dob,
-        employee.gender
+        employee.gender,
+        employee.createdAt,
         ); 
     try {
       await employeesHandlers.addEmployee(myEmployeeDto);

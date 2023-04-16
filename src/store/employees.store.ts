@@ -1,6 +1,6 @@
 import type EmployeeDto from '../components/Dtos/Employees.DTO';
-import { database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { auth, database } from '../components/lib/firebase/firebase';
+import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const employeesCollection = collection(database, 'employees');
@@ -27,13 +27,20 @@ export const employeesHandlers = {
     },
     getAllEmployees: async () => {
         const employees = [] as any;
+        const allEmployees = [] as any;
+        const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
-        const querySnapshot = await getDocs(employeesCollection);
+        const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
             employees.push({...doc.data(), id: doc.id});
         });
+
+        const querySnapshotAll = await getDocs(employeesCollection);
+        querySnapshotAll.forEach((doc) => {
+            allEmployees.push({...doc.data(), id: doc.id});
+        });
         console.log('employees', employees);
-        return {employees, employeesCount: employees.length};
+        return {employees, employeesCount: employees.length, allEmployees};
     },
     getById: async (id: string) => {
         let employee: any = {};

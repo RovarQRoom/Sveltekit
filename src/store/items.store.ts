@@ -1,6 +1,6 @@
 import type ItemDto from '../components/Dtos/Items.DTO';
-import { database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { auth, database } from '../components/lib/firebase/firebase';
+import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const itemsCollection = collection(database, 'items');
@@ -27,8 +27,9 @@ export const itemsHandlers = {
     },
     getAllItems: async () => {
         const items = [] as any;
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
-        const querySnapshot = await getDocs(itemsCollection);
+        const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
             items.push({...doc.data(), id: doc.id});
         });

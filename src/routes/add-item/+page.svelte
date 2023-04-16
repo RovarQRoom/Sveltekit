@@ -6,7 +6,7 @@
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
   
-    let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "" };
+    let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date() ,createdAt: new Date() };
   
     let types = [
     {value:"oil", name: "Oil"},
@@ -26,7 +26,10 @@
         itemDto.quantity,
         itemDto.buyingPrice,
         itemDto.salesPriceUp,
-        itemDto.salesPriceDown
+        itemDto.salesPriceDown,
+        itemDto.itemCreatedDate,
+        itemDto.itemExpiredDate,
+        itemDto.createdAt,
         ); 
     try {
       await itemsHandlers.addItem(myItemDto);
@@ -99,12 +102,20 @@
             <Select on:input={updateItemData} class="mt-2 mb-2" items={types} bind:value={itemDto.type} />
         </Label>
         <div class="mb-6">
-            <Label for="email" class="mb-2">Item Sale Price More Than 100</Label>
+            <Label for="item_sale" class="mb-2">Item Sale Price More Than 100</Label>
             <Input on:input={updateItemData} bind:value={itemDto.salesPriceUp} type="text" id="salePriceMore" placeholder="1 - 1,000,000"/>
         </div>
         <div class="mb-6">
-            <Label for="email" class="mb-2">Item Sale Price Less Than 100</Label>
+            <Label for="item_sale" class="mb-2">Item Sale Price Less Than 100</Label>
             <Input on:input={updateItemData} bind:value={itemDto.salesPriceDown} type="text" id="salePriceLess" placeholder="1 - 1,000,000"/>
+        </div>
+        <div class="mb-6">
+            <Label for="item_sale" class="mb-2">Item Created Date</Label>
+            <input bind:value={itemDto.itemCreatedDate} type="date" id="salePriceMore" placeholder="1-1-2000" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+        </div>
+        <div class="mb-6">
+            <Label for="item_sale" class="mb-2">Item Expired Date</Label>
+            <input bind:value={itemDto.itemExpiredDate} type="date" id="salePriceLess" placeholder="1-1-2023" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
         </div>
             <Button on:click={addItem}>+ Add Item</Button>
     </div>

@@ -1,5 +1,22 @@
-<script>
+<script lang="ts">
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
+	import { onMount } from 'svelte';
+	import { employeesHandlers } from '../../../store';
+
+  let employees: any[] = [];
+    onMount(async () => {
+      const { allEmployees:emp } = await employeesHandlers.getAllEmployees();
+      employees = emp;
+    });
+
+    function convertTimestamp(time: any) {
+    let dateInMillis = time * 1000
+    let date = new Date(dateInMillis)
+    let myDate = date.toLocaleDateString()
+    let myTime = date.toLocaleTimeString()
+    myDate = myDate.replaceAll('/', '-')
+    return myDate + " " + myTime
+  }
   </script>
   
   <Table class="flex flex-nowrap">
@@ -8,67 +25,29 @@
           <TableHeadCell class="!p-4">
             <Checkbox />
           </TableHeadCell>
-          <TableHeadCell>Product name</TableHeadCell>
-          <TableHeadCell>Color</TableHeadCell>
-          <TableHeadCell>Category</TableHeadCell>
-          <TableHeadCell>ACCESSORIES</TableHeadCell>
-          <TableHeadCell>AVAILABLE</TableHeadCell>
-          <TableHeadCell>Price</TableHeadCell>
-          <TableHeadCell>WEIGHT</TableHeadCell>
-          <TableHeadCell>ACTION</TableHeadCell>
+          <TableHeadCell>Employee Name</TableHeadCell>
+          <TableHeadCell>Employee Address</TableHeadCell>
+          <TableHeadCell>Date of Birth</TableHeadCell>
+          <TableHeadCell>Employee Email</TableHeadCell>
+          <TableHeadCell>Employee Gender</TableHeadCell>
+          <TableHeadCell>Employee Phone</TableHeadCell>
+          <TableHeadCell>Employee Added At</TableHeadCell>
+          <TableHeadCell>Employee Deleted At</TableHeadCell>
         </TableHead>
+        {#each employees as employee}
         <TableBody >
           <TableBodyRow>
             <TableBodyCell class="!p-4">
               <Checkbox />
             </TableBodyCell>
-            <TableBodyCell>Apple MacBook Pro 17"</TableBodyCell>
-            <TableBodyCell>Sliver</TableBodyCell>
-            <TableBodyCell>Laptop</TableBodyCell>
-            <TableBodyCell>Yes</TableBodyCell>
-            <TableBodyCell>Yes</TableBodyCell>
-            <TableBodyCell>$2999</TableBodyCell>
-            <TableBodyCell>3.0 lb.</TableBodyCell>
-            <TableBodyCell
-              ><a href="/tables" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                Edit
-              </a>
-              <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">
-                Remove
-              </a></TableBodyCell
-            >
-          </TableBodyRow>
-          <TableBodyRow>
-            <TableBodyCell class="!p-4">
-              <Checkbox />
-            </TableBodyCell>
-            <TableBodyCell>Microsoft Surface Pro</TableBodyCell>
-            <TableBodyCell>White</TableBodyCell>
-            <TableBodyCell>Laptop PC</TableBodyCell>
-            <TableBodyCell>No</TableBodyCell>
-            <TableBodyCell>Yes</TableBodyCell>
-            <TableBodyCell>$1999</TableBodyCell>
-            <TableBodyCell>1.0 lb.</TableBodyCell>
-            <TableBodyCell
-              ><a href="/tables" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                Edit
-              </a>
-              <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">
-                Remove
-              </a></TableBodyCell
-            >
-          </TableBodyRow>
-          <TableBodyRow>
-            <TableBodyCell class="!p-4">
-              <Checkbox />
-            </TableBodyCell>
-            <TableBodyCell>Magic Mouse 2</TableBodyCell>
-            <TableBodyCell>Black</TableBodyCell>
-            <TableBodyCell>Accessories</TableBodyCell>
-            <TableBodyCell>Yes</TableBodyCell>
-            <TableBodyCell>No</TableBodyCell>
-            <TableBodyCell>$99</TableBodyCell>
-            <TableBodyCell>0.2 lb.</TableBodyCell>
+            <TableBodyCell>{employee.name}</TableBodyCell>
+            <TableBodyCell>{employee.address}</TableBodyCell>
+            <TableBodyCell>{employee.dob}</TableBodyCell>
+            <TableBodyCell>{employee.email}</TableBodyCell>
+            <TableBodyCell>{employee.gender}</TableBodyCell>
+            <TableBodyCell>{employee.phone}</TableBodyCell>
+            <TableBodyCell>{convertTimestamp(employee.createdAt)}</TableBodyCell>
+            <TableBodyCell>{employee.deletedAt}</TableBodyCell>
             <TableBodyCell
               ><a href="/tables" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
                 Edit
@@ -79,7 +58,8 @@
             >
           </TableBodyRow>
         </TableBody>
-    </div>
+        {/each}
+      </div>
 </Table>
 
 <style>

@@ -4,7 +4,7 @@
   import { Label, Input, Fileupload, Button, Select, Avatar, Textarea } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
 	import { authStore } from "../../store/store";
-  let company = {userId: "", name: "", address: "",phone: "", email: "",detail:"" };
+  let company = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
 
   let textareaprops = {
     id: 'details',
@@ -23,7 +23,8 @@
         company.address,
         company.phone,
         company.email,
-        company.detail
+        company.detail,
+        company.createdAt,
         ); 
     try {
       await companysHandlers.addCompany(myCompanyDto);

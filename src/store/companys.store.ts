@@ -1,6 +1,6 @@
 import type CompanyDto from '../components/Dtos/Companys.DTO';
-import { database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { auth, database } from '../components/lib/firebase/firebase';
+import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const companysCollection = collection(database, 'company');
@@ -27,8 +27,9 @@ export const companysHandlers = {
     },
     getAllCompanys: async () => {
         const companys = [] as any;
+        const queryUser = query(companysCollection, where('userid','==',auth.currentUser?.uid) ,where('deletedAt', '==', null));
 
-        const querySnapshot = await getDocs(companysCollection);
+        const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
             companys.push({...doc.data(), id: doc.id});
         });
