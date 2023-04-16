@@ -5,18 +5,13 @@
 
   let employees: any[] = [];
     onMount(async () => {
-      const { allEmployees:emp } = await employeesHandlers.getAllEmployees();
-      employees = emp;
+      employees = await employeesHandlers.getAllEmployees();
     });
 
-    function convertTimestamp(time: any) {
-    let dateInMillis = time * 1000
-    let date = new Date(dateInMillis)
-    let myDate = date.toLocaleDateString()
-    let myTime = date.toLocaleTimeString()
-    myDate = myDate.replaceAll('/', '-')
-    return myDate + " " + myTime
-  }
+    const deleteEmployee = (id: string) => async () => {
+      await employeesHandlers.deleteEmployee(id);
+    };
+
   </script>
   
   <Table class="flex flex-nowrap">
@@ -46,15 +41,15 @@
             <TableBodyCell>{employee.email}</TableBodyCell>
             <TableBodyCell>{employee.gender}</TableBodyCell>
             <TableBodyCell>{employee.phone}</TableBodyCell>
-            <TableBodyCell>{convertTimestamp(employee.createdAt)}</TableBodyCell>
+            <TableBodyCell>{employee.createdAt}</TableBodyCell>
             <TableBodyCell>{employee.deletedAt}</TableBodyCell>
             <TableBodyCell
               ><a href="/tables" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
                 Edit
               </a>
-              <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">
+              <button on:click={deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                 Remove
-              </a></TableBodyCell
+              </button></TableBodyCell
             >
           </TableBodyRow>
         </TableBody>

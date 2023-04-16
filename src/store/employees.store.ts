@@ -22,12 +22,11 @@ export const employeesHandlers = {
     },
     deleteEmployee: async (id:string) => {
         const employeesDoc = doc(database, 'employees', id);
-        await deleteDoc(employeesDoc);
-        console.log('deleted');
+        await updateDoc(employeesDoc,{deletedAt: new Date()});
+        console.log('deleted' , employeesDoc);
     },
-    getAllEmployees: async () => {
+    getAllEmployeesExist: async () => {
         const employees = [] as any;
-        const allEmployees = [] as any;
         const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
         const querySnapshot = await getDocs(queryUser);
@@ -35,12 +34,19 @@ export const employeesHandlers = {
             employees.push({...doc.data(), id: doc.id});
         });
 
-        const querySnapshotAll = await getDocs(employeesCollection);
-        querySnapshotAll.forEach((doc) => {
-            allEmployees.push({...doc.data(), id: doc.id});
+        console.log('employees', employees);
+        return {employees, employeesCount: employees.length};
+    },
+    getAllEmployees: async () => {
+        const employees = [] as any;
+        const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            employees.push({...doc.data(), id: doc.id});
         });
         console.log('employees', employees);
-        return {employees, employeesCount: employees.length, allEmployees};
+        return employees;
     },
     getById: async (id: string) => {
         let employee: any = {};

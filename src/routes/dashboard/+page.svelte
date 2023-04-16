@@ -18,7 +18,7 @@
   let storesCount = 0;
 
   onMount(async () => {
-      const { employees:emp, employeesCount:empCount } = await employeesHandlers.getAllEmployees();
+      const { employees:emp, employeesCount:empCount } = await employeesHandlers.getAllEmployeesExist();
       employees = emp;
       employeesCount = empCount;
 
