@@ -22,7 +22,7 @@
       employees = emp;
       employeesCount = empCount;
 
-      const { items:it, itemsCount:itCount } = await itemsHandlers.getAllItems();
+      const { items:it, itemsCount:itCount } = await itemsHandlers.getAllItemsExist();
       items = it;
       itemsCount = itCount;
 

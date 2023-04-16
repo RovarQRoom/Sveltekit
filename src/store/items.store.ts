@@ -19,13 +19,14 @@ export const itemsHandlers = {
     updateItem: async (item: ItemUpdateDto, id:string) => {
         const itemsDoc = doc(database, 'items', id);
         await updateDoc(itemsDoc, {...item});
+        console.log('updated', item);
     },
     deleteItem: async (id:string) => {
         const itemsDoc = doc(database, 'items', id);
         await updateDoc(itemsDoc, {deletedAt: new Date()});
         console.log('deleted');
     },
-    getAllItems: async () => {
+    getAllItemsExist: async () => {
         const items = [] as any;
         const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
@@ -36,10 +37,21 @@ export const itemsHandlers = {
         console.log('items', items);
         return {items, itemsCount: items.length};
     },
+    getAllItems: async () => {
+        const items = [] as any;
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            items.push({...doc.data(), id: doc.id});
+        });
+        console.log('items', items);
+        return items;
+    },
     getById: async (id: string) => {
         let item: any = {};
-        const employeeDoc = await doc(database, 'items', id);
-        item = await getDoc(employeeDoc);
-        return item;
+        const itemDoc = await doc(database, 'items', id);
+        item = await getDoc(itemDoc);
+        return item.data();
     }
 };

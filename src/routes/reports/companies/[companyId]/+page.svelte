@@ -34,7 +34,7 @@
             companyUpdate.updatedAt
         ); 
     try {
-      await companysHandlers.updateCompany(myCompanyDto,companyId);
+      await companysHandlers.updateStore(myCompanyDto,companyId);
     } catch (error) {
       console.log(error);
     }

@@ -19,6 +19,7 @@ export const storesHandlers = {
     updateStore: async (store: StoreUpdateDto, id:string) => {
         const storeDoc = doc(database, 'store', id);
         await updateDoc(storeDoc, {...store});
+        console.log('updated', store);
     },
     deleteStore: async (id:string) => {
         const storeDoc = doc(database, 'store', id);
@@ -43,7 +44,7 @@ export const storesHandlers = {
             stores.push({...doc.data(), id: doc.id});
         });
         console.log('stores', stores);
-        return {stores, storesCount: stores.length};
+        return stores;
     }, 
     getById: async (id: string) => {
         let store: any = {};

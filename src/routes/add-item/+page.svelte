@@ -87,7 +87,7 @@
               </div>
               <div>
                 <Label for="address" class="mb-2">Item Detail</Label>
-                <Input on:input={updateItemData} bind:value={itemDto.detail} type="text" id="detail" placeholder="Address"/>
+                <Input on:input={updateItemData} bind:value={itemDto.detail} type="text" id="detail" placeholder="Item Details..."/>
             </div>
             <div>
                 <Label for="phone" class="mb-2">Item Quantity</Label>

@@ -16,7 +16,7 @@ export const companysHandlers = {
             console.log('error', err);
         }
     },
-    updateCompany: async (company: CompanyUpdateDto, id:string) => {
+    updateStore: async (company: CompanyUpdateDto, id:string) => {
         const companysDoc = doc(database, 'company', id);
         await updateDoc(companysDoc, {...company});
         console.log('updated', company);
