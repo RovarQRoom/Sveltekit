@@ -1,4 +1,4 @@
-import type { CompanyDto } from '../components/Dtos/Companys.DTO';
+import type { CompanyDto, CompanyUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
@@ -16,16 +16,16 @@ export const companysHandlers = {
             console.log('error', err);
         }
     },
-    updateCompany: async (company: any, id:string) => {
+    updateCompany: async (company: CompanyUpdateDto, id:string) => {
         const companysDoc = doc(database, 'company', id);
-        await updateDoc(companysDoc, company);
+        await updateDoc(companysDoc, {...company});
     },
     deleteCompany: async (id:string) => {
         const companysDoc = doc(database, 'company', id);
-        await deleteDoc(companysDoc);
+        await updateDoc(companysDoc, {deletedAt: new Date()});
         console.log('deleted');
     },
-    getAllCompanys: async () => {
+    getAllCompanysExist: async () => {
         const companys = [] as any;
         const queryUser = query(companysCollection, where('userid','==',auth.currentUser?.uid) ,where('deletedAt', '==', null));
 
@@ -35,6 +35,18 @@ export const companysHandlers = {
         });
         console.log('companys', companys);
         return {companys, companysCount: companys.length};
+    },
+
+    getAllCompanys: async () => {
+        const companys = [] as any;
+        const queryUser = query(companysCollection, where('userid','==',auth.currentUser?.uid));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            companys.push({...doc.data(), id: doc.id});
+        });
+        console.log('companys', companys);
+        return companys;
     },
     getById: async (id: string) => {
         let company: any = {};

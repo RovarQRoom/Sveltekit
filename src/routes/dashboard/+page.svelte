@@ -26,7 +26,7 @@
       items = it;
       itemsCount = itCount;
 
-      const { companys:comp, companysCount:compCount } = await companysHandlers.getAllCompanys();
+      const { companys:comp, companysCount:compCount } = await companysHandlers.getAllCompanysExist();
       companys = comp;
       companysCount = compCount;
 

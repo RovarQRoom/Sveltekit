@@ -3,13 +3,13 @@
       import { onMount } from 'svelte';
       import { companysHandlers } from '../../../store';
   
-    let employees: any[] = [];
+    let companies: any[] = [];
       onMount(async () => {
-        employees = await companysHandlers.getAllEmployees();
+        companies = await companysHandlers.getAllCompanys();
       });
   
       const deleteEmployee = (id: string) => async () => {
-        await companysHandlers.deleteEmployee(id);
+        await companysHandlers.deleteCompany(id);
       };
   
     </script>
@@ -29,27 +29,26 @@
             <TableHeadCell>Company Updated At</TableHeadCell>
             <TableHeadCell>Company Deleted At</TableHeadCell>
           </TableHead>
-          {#each employees as employee}
+          {#each companies as company}
           <TableBody >
             <TableBodyRow>
               <TableBodyCell class="!p-4">
                 <Checkbox />
               </TableBodyCell>
-              <TableBodyCell>{employee.name}</TableBodyCell>
-              <TableBodyCell>{employee.address}</TableBodyCell>
-              <TableBodyCell>{employee.dob}</TableBodyCell>
-              <TableBodyCell>{employee.email}</TableBodyCell>
-              <TableBodyCell>{employee.gender}</TableBodyCell>
-              <TableBodyCell>{employee.phone}</TableBodyCell>
-              <TableBodyCell>{employee.createdAt}</TableBodyCell>
-              <TableBodyCell>{employee.updatedAt}</TableBodyCell>
-              <TableBodyCell>{employee.deletedAt}</TableBodyCell>
-              {#if !employee.deletedAt}
+              <TableBodyCell>{company.name}</TableBodyCell>
+              <TableBodyCell>{company.address}</TableBodyCell>
+              <TableBodyCell>{company.email}</TableBodyCell>
+              <TableBodyCell>{company.phone}</TableBodyCell>
+              <TableBodyCell>{company.detail}</TableBodyCell>
+              <TableBodyCell>{company.createdAt}</TableBodyCell>
+              <TableBodyCell>{company.updatedAt}</TableBodyCell>
+              <TableBodyCell>{company.deletedAt}</TableBodyCell>
+              {#if !company.deletedAt}
               <TableBodyCell>
-                <a href="/reports/employees/{employee.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                <a href="/reports/companies/{company.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
                   Edit
                 </a>
-                <button on:click={deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                <button on:click={deleteEmployee(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                   Remove
                 </button></TableBodyCell>
             {/if}
