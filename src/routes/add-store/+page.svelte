@@ -20,11 +20,11 @@
        let myCompanyDto = new StoreDto(
            store.userId = auth.currentUser?.uid || "",
            store.name,
-           store.address,
-           store.phone,
            store.email,
+           store.phone,
+           store.address,
            store.detail,
-            store.createdAt,
+           store.createdAt,
            ); 
        try {
          await storesHandlers.addStore(myCompanyDto);

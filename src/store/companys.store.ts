@@ -19,6 +19,7 @@ export const companysHandlers = {
     updateCompany: async (company: CompanyUpdateDto, id:string) => {
         const companysDoc = doc(database, 'company', id);
         await updateDoc(companysDoc, {...company});
+        console.log('updated', company);
     },
     deleteCompany: async (id:string) => {
         const companysDoc = doc(database, 'company', id);
@@ -52,6 +53,6 @@ export const companysHandlers = {
         let company: any = {};
         const companyDoc = await doc(database, 'company', id);
         company = await getDoc(companyDoc);
-        return company;
+        return company.data();
     }
 };

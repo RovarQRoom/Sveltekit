@@ -20,9 +20,9 @@
     let myCompanyDto = new CompanyDto(
         company.userId = auth.currentUser?.uid || "",
         company.name,
-        company.address,
-        company.phone,
         company.email,
+        company.phone,
+        company.address,
         company.detail,
         company.createdAt,
         ); 

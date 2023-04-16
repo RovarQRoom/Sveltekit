@@ -1,4 +1,4 @@
-import type { ItemDto } from '../components/Dtos/Items.DTO';
+import type { ItemDto, ItemUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
@@ -16,13 +16,13 @@ export const itemsHandlers = {
             console.log('error', err);
         }
     },
-    updateItem: async (item: any, id:string) => {
+    updateItem: async (item: ItemUpdateDto, id:string) => {
         const itemsDoc = doc(database, 'items', id);
-        await updateDoc(itemsDoc, item);
+        await updateDoc(itemsDoc, {...item});
     },
     deleteItem: async (id:string) => {
         const itemsDoc = doc(database, 'items', id);
-        await deleteDoc(itemsDoc);
+        await updateDoc(itemsDoc, {deletedAt: new Date()});
         console.log('deleted');
     },
     getAllItems: async () => {

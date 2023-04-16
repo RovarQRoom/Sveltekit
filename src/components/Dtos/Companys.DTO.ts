@@ -1,9 +1,9 @@
 export class CompanyDto {
     userid: string;
     name: string;
-    address: string;
-    phone: string;
     email: string;
+    phone: string;
+    address: string;
     detail: string;
     createdAt: Date;
     deletedAt: Date | null = null;
@@ -21,9 +21,9 @@ export class CompanyDto {
 
 export class CompanyUpdateDto {
     name: string;
-    address: string;
-    phone: string;
     email: string;
+    phone: string;
+    address: string;
     detail: string;
     updatedAt: Date;
     constructor(name: string, email: string, phone: string, address: string, detail: string, updatedAt: Date) {
