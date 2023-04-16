@@ -1,4 +1,4 @@
-export default class CompanyDto {
+export class CompanyDto {
     userid: string;
     name: string;
     address: string;
@@ -16,5 +16,22 @@ export default class CompanyDto {
         this.detail = detail;
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
+    }
+}
+
+export class CompanyUpdateDto {
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+    detail: string;
+    updatedAt: Date;
+    constructor(name: string, email: string, phone: string, address: string, detail: string, updatedAt: Date) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.detail = detail;
+        this.updatedAt = updatedAt;
     }
 }

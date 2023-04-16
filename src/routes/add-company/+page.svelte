@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CompanyDto from "../../components/Dtos/Companys.DTO";
+  import { CompanyDto } from "../../components/Dtos/Companys.DTO";
   import { auth } from "../../components/lib/firebase/firebase";
   import { Label, Input, Fileupload, Button, Select, Avatar, Textarea } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";

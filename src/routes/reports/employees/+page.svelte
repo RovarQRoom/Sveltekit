@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { authStore } from './../../../store/store';
-    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
+  import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { employeesHandlers } from '../../../store';
 
@@ -11,7 +10,6 @@
 
     const deleteEmployee = (id: string) => async () => {
       await employeesHandlers.deleteEmployee(id);
-      window.location.reload();
     };
 
   </script>

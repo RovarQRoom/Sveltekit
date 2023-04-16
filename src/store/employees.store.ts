@@ -53,6 +53,7 @@ export const employeesHandlers = {
         let employee: any = {};
         const employeeDoc = await doc(database, 'employees', id);
         employee = await getDoc(employeeDoc);
-        return employee;
+        
+        return employee.data();
     }
 };

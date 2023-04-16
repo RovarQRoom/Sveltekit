@@ -4,7 +4,14 @@
 	import { Avatar, Fileupload, Label, Input, Select, Button } from 'flowbite-svelte';
 	import { EmployeeUpdateDto } from '../../../../components/Dtos';
 	import { employeesHandlers } from '../../../../store';
+	import { onMount } from 'svelte';
     let employeeUpdate = { name: "", address: "",  email: "", phone: "", updatedAt: new Date() };
+
+    onMount(async () => {
+        const employeeId = $page.params.employeeId;
+        const employee = await employeesHandlers.getById(employeeId);
+        employeeUpdate = {...employee, updatedAt: new Date()};
+    });
 
         async function updateEmployee() {
             const employeeId = $page.params.employeeId;

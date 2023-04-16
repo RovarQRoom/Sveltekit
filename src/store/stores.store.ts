@@ -1,4 +1,4 @@
-import type StoreDto from '../components/Dtos/Stores.DTO';
+import type { StoreDto } from '../components/Dtos/Stores.DTO';
 import { database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 

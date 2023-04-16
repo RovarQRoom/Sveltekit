@@ -2,7 +2,7 @@
 	import { authStore } from './../../store/store';
      import { auth } from "../../components/lib/firebase/firebase";
      import { Label, Input, Fileupload, Button, Avatar, Textarea } from 'flowbite-svelte'
-	import StoreDto from "../../components/Dtos/Stores.DTO";
+	import { StoreDto } from "../../components/Dtos/Stores.DTO";
 	import { storesHandlers } from "../../store/stores.store";
      let store = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
    

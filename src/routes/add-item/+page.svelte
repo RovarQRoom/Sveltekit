@@ -2,7 +2,7 @@
     import { addDoc, collection, doc } from "firebase/firestore";
     import { auth, database } from "../../components/lib/firebase/firebase";
 	import { Avatar, Fileupload, Label, Input, Select, Button } from "flowbite-svelte";
-	import ItemDto from "../../components/Dtos/Items.DTO";
+	import {ItemDto} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
   

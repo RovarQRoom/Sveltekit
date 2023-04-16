@@ -1,4 +1,4 @@
-import type CompanyDto from '../components/Dtos/Companys.DTO';
+import type { CompanyDto } from '../components/Dtos/Companys.DTO';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
