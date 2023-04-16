@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { authStore } from './../../../store/store';
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { employeesHandlers } from '../../../store';
@@ -10,6 +11,7 @@
 
     const deleteEmployee = (id: string) => async () => {
       await employeesHandlers.deleteEmployee(id);
+      window.location.reload();
     };
 
   </script>
@@ -27,6 +29,7 @@
           <TableHeadCell>Employee Gender</TableHeadCell>
           <TableHeadCell>Employee Phone</TableHeadCell>
           <TableHeadCell>Employee Added At</TableHeadCell>
+          <TableHeadCell>Employee Updated At</TableHeadCell>
           <TableHeadCell>Employee Deleted At</TableHeadCell>
         </TableHead>
         {#each employees as employee}
@@ -42,20 +45,19 @@
             <TableBodyCell>{employee.gender}</TableBodyCell>
             <TableBodyCell>{employee.phone}</TableBodyCell>
             <TableBodyCell>{employee.createdAt}</TableBodyCell>
+            <TableBodyCell>{employee.updatedAt}</TableBodyCell>
             <TableBodyCell>{employee.deletedAt}</TableBodyCell>
-            <TableBodyCell
-              ><a href="/tables" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+            {#if !employee.deletedAt}
+            <TableBodyCell>
+              <a href="/reports/employees/{employee.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
                 Edit
               </a>
               <button on:click={deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                 Remove
-              </button></TableBodyCell
-            >
-          </TableBodyRow>
-        </TableBody>
+              </button></TableBodyCell>
+          {/if}
+        </TableBodyRow>
+      </TableBody>
         {/each}
       </div>
 </Table>
-
-<style>
-</style>

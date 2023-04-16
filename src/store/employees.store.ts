@@ -1,6 +1,6 @@
-import type EmployeeDto from '../components/Dtos/Employees.DTO';
+import type {EmployeeDto, EmployeeUpdateDto} from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const employeesCollection = collection(database, 'employees');
@@ -16,9 +16,10 @@ export const employeesHandlers = {
             console.log('error', err);
         }
     },
-    updateEmployee: async (employee: any, id:string) => {
+    updateEmployee: async (employee: EmployeeUpdateDto, id:string) => {
         const employeesDoc = doc(database, 'employees', id);
-        await updateDoc(employeesDoc, employee);
+        await updateDoc(employeesDoc, {...employee});
+        console.log('updated' , employeesDoc);
     },
     deleteEmployee: async (id:string) => {
         const employeesDoc = doc(database, 'employees', id);
