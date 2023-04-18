@@ -50,6 +50,7 @@
               return;
           }
           const choosedFile = this.files[0] || null;
+          fileUpload = choosedFile;
           
           console.log(choosedFile);
           

@@ -4,8 +4,11 @@
      import { Label, Input, Fileupload, Button, Avatar, Textarea } from 'flowbite-svelte'
 	import { StoreDto } from "../../components/Dtos/Stores.DTO";
 	import { storesHandlers } from "../../store/stores.store";
+	import { imageHandlers } from '../../store';
      let store = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
    
+     let fileUpload: File;
+
      let textareaprops = {
        id: 'details',
        name: 'details',
@@ -16,6 +19,7 @@
    
      
      async function addStore() {
+      let imageURL = await imageHandlers.uploadImage(fileUpload);
       
        let myCompanyDto = new StoreDto(
            store.userId = auth.currentUser?.uid || "",
@@ -24,6 +28,7 @@
            store.phone,
            store.address,
            store.detail,
+           imageURL,
            store.createdAt,
            ); 
        try {
@@ -49,6 +54,7 @@
                  return;
              }
              const choosedFile = this.files[0] || null;
+             fileUpload = choosedFile;
              
              console.log(choosedFile);
              
@@ -75,7 +81,7 @@
                <div class="flex space-x-4 m-3">
                    <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
                </div>
-               <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+               <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
            </div>
            <div class="grid gap-6 mb-6 md:grid-cols-2">
                  <div>

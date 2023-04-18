@@ -1,7 +1,7 @@
 <script lang="ts">
 
 	import { Avatar, Button, Fileupload, Input, Label } from "flowbite-svelte";
-	import { authHandlers, profileHandlers } from "../../../store";
+	import { imageHandlers, profileHandlers } from "../../../store";
 	import { ProfileUpdateDTO } from "../../../components/Dtos/Profile.DTO";
 	import { onMount } from "svelte";
 	import { auth } from "../../../components/lib/firebase/firebase";
@@ -11,20 +11,21 @@
         firstname: "",
         lastname: "",
         email: "",
-        photoURL: "",
         updatedAt: new Date(),
     };
+    let fileUpload: File;
 
     onMount(async () => {
         console.log(auth.currentUser);
     });
 
     async function updateProfile(){
+      let imageURL = await imageHandlers.uploadImage(fileUpload);
       let name = `${userDetails.firstname} ${userDetails.lastname}`;
         const UserDTO = new ProfileUpdateDTO(
             name,
             userDetails.email,
-            userDetails.photoURL,
+            imageURL,
             userDetails.updatedAt,
         );
         try{
@@ -46,6 +47,7 @@
               return;
           }
           const choosedFile = this.files[0] || null;
+          fileUpload = choosedFile;
           
           console.log("File Chosen",choosedFile);
           
@@ -69,7 +71,7 @@
         <div class="flex space-x-4 m-3">
             <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
         </div>
-        <Fileupload id="files" bind:value={userDetails.photoURL} size='sm' on:click={pictureUpdate} />
+        <Fileupload id="files" bind:file={fileUpload} size='sm' on:click={pictureUpdate} />
     </div>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
       <div>

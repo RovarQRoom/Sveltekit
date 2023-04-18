@@ -4,7 +4,10 @@
   import { Label, Input, Fileupload, Button, Select, Avatar, Textarea } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
 	import { authStore } from "../../store/store";
+	import { imageHandlers } from "../../store";
   let company = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
+
+  let fileUpload: File;
 
   let textareaprops = {
     id: 'details',
@@ -16,7 +19,7 @@
 
   
   async function addCompany() {
-    console.log(auth.currentUser?.uid);
+    let imageURL = await imageHandlers.uploadImage(fileUpload);
     let myCompanyDto = new CompanyDto(
         company.userId = auth.currentUser?.uid || "",
         company.name,
@@ -24,6 +27,7 @@
         company.phone,
         company.address,
         company.detail,
+        imageURL,
         company.createdAt,
         ); 
     try {
@@ -49,6 +53,7 @@
               return;
           }
           const choosedFile = this.files[0] || null;
+          fileUpload = choosedFile;
           
           console.log(choosedFile);
           
@@ -74,7 +79,7 @@
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>
