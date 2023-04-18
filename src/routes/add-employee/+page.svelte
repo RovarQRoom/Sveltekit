@@ -2,9 +2,10 @@
   import {EmployeeDto} from "../../components/Dtos";
   import { auth } from "../../components/lib/firebase/firebase";
   import { employeesHandlers} from "../../store/employees.store";
-  import { Label, Input, Fileupload, Button, Select, Avatar } from 'flowbite-svelte'
+  import { Label, Input, Fileupload, Button, Select, Avatar, Sidebar, SidebarWrapper, SidebarGroup, SidebarItem, Search } from 'flowbite-svelte'
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
+	import { onMount } from "svelte";
   let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
@@ -13,6 +14,13 @@
     {value:"male", name: "Male"},
     {value:"female", name: "Female"}
   ]
+
+  let employees: any[] = [];
+
+  onMount(async () => {
+    const { employees:emp } = await employeesHandlers.getAllEmployeesExist();
+      employees = emp;
+  });
   
   async function addEmployee() {
     let imageURL = await imageHandlers.uploadImage(fileUpload);
@@ -68,15 +76,15 @@
       })
   }
 </script>
-{#if !$authStore.loading}
- <div class="employee-form">
+
+ <div class="employee-form flex flex-row justify-between" >
     <div class="employee-data m-5">
         <div class="employee-img my-3">
             <Label class="pb-2" for='small_size' >Employee Image</Label>
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} accept="image/*"/>
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>
@@ -105,5 +113,20 @@
         </div>
             <Button on:click={addEmployee}>+ Add Employee</Button>
     </div>
-</div> 
-{/if}
+    <div style="height: calc(100vh - 72px);">
+          <Sidebar class="sidebar h-full m-3">
+            <SidebarWrapper class="h-full">
+              <SidebarGroup class="h-full">
+                <Search>
+                  <Button>Search</Button>
+                </Search>
+                {#each employees as employee}
+                  <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                    <Avatar src={employee.employeeImage} rounded border /><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>
+                  </div>
+                {/each}
+              </SidebarGroup>
+            </SidebarWrapper>
+          </Sidebar>
+      </div> 
+    </div>

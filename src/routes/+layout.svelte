@@ -98,7 +98,7 @@
 		</div>
 	</nav>
 {/if}
-<div class="h-full flex" style="height: calc(100vh - 72px);">
+<div class="h-full flex " style="height: calc(100vh - 72px);">
 	{#if $page.url.pathname !== '/login'}
 		<div>
 			<Sidebar class="h-full">
@@ -230,7 +230,7 @@
 	{/if}
 	
 		
-	<div>
+	<div class="w-full">
 		<slot />
 	</div>
 </div>

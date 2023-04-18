@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
+    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar} from 'flowbite-svelte';
       import { onMount } from 'svelte';
       import { companysHandlers } from '../../../store';
   
@@ -20,6 +20,7 @@
             <TableHeadCell class="!p-4">
               <Checkbox />
             </TableHeadCell>
+            <TableHeadCell>Company Image</TableHeadCell>
             <TableHeadCell>Company Name</TableHeadCell>
             <TableHeadCell>Company Address</TableHeadCell>
             <TableHeadCell>Company Email</TableHeadCell>
@@ -35,6 +36,7 @@
               <TableBodyCell class="!p-4">
                 <Checkbox />
               </TableBodyCell>
+              <TableBodyCell><Avatar src={company.companyImage} alt="Company Image" rounded/></TableBodyCell>
               <TableBodyCell>{company.name}</TableBodyCell>
               <TableBodyCell>{company.address}</TableBodyCell>
               <TableBodyCell>{company.email}</TableBodyCell>

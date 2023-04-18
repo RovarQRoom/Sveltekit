@@ -1,11 +1,12 @@
 <script lang="ts">
   import { CompanyDto } from "../../components/Dtos/Companys.DTO";
   import { auth } from "../../components/lib/firebase/firebase";
-  import { Label, Input, Fileupload, Button, Select, Avatar, Textarea } from 'flowbite-svelte'
+  import { Label, Input, Fileupload, Button, Select, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
-  let company = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
+	import { onMount } from "svelte";
+  let companyDTO = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
 
   let fileUpload: File;
 
@@ -17,18 +18,25 @@
     placeholder: 'Write About The Company Details...',
   };
 
+  let companies: any[] = [];
+
+  onMount(async () => {
+    const { companys:comp } = await companysHandlers.getAllCompanysExist();
+    companies = comp;
+  });
+
   
   async function addCompany() {
     let imageURL = await imageHandlers.uploadImage(fileUpload);
     let myCompanyDto = new CompanyDto(
-        company.userId = auth.currentUser?.uid || "",
-        company.name,
-        company.email,
-        company.phone,
-        company.address,
-        company.detail,
+        companyDTO.userId = auth.currentUser?.uid || "",
+        companyDTO.name,
+        companyDTO.email,
+        companyDTO.phone,
+        companyDTO.address,
+        companyDTO.detail,
         imageURL,
-        company.createdAt,
+        companyDTO.createdAt,
         ); 
     try {
       await companysHandlers.addCompany(myCompanyDto);
@@ -38,7 +46,7 @@
   }
 
   function updateCompanyData(event: any) {
-    company = { ...company, [event.target.name]: event.target.value };
+    companyDTO = { ...companyDTO, [event.target.name]: event.target.value };
   }
 
   function pictureUpdate(event: any) {
@@ -71,39 +79,53 @@
       })
   }
   </script>
-    {#if !$authStore.loading}
-  <div class="company-form">
+  <div class="company-form flex flex-row justify-between">
     <div class="company-data m-5">
         <div class="company-img my-3">
             <Label class="pb-2" for='small_size' >Company Image</Label>
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} accept="image/*"/>
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>
                   <Label for="name" class="mb-2">Company Name</Label>
-                <Input on:input={updateCompanyData} bind:value={company.name} type="text" id="name" placeholder="John"/>
+                <Input on:input={updateCompanyData} bind:value={companyDTO.name} type="text" id="name" placeholder="John"/>
               </div>
               <div>
                 <Label for="address" class="mb-2">Company Address</Label>
-                <Input on:input={updateCompanyData} bind:value={company.address} type="text" id="address" placeholder="Address"/>
+                <Input on:input={updateCompanyData} bind:value={companyDTO.address} type="text" id="address" placeholder="Address"/>
             </div>
             <div>
                 <Label for="phone" class="mb-2">Company Phone Number</Label>
-                <Input on:input={updateCompanyData} bind:value={company.phone} type="tel" id="phone" placeholder="0770-111-1551"/>
+                <Input on:input={updateCompanyData} bind:value={companyDTO.phone} type="tel" id="phone" placeholder="0770-111-1551"/>
             </div>
             <div>
                 <Label for="detail" class="mb-2">Company Details</Label>
-                <Textarea {...textareaprops} bind:value={company.detail} />
+                <Textarea {...textareaprops} bind:value={companyDTO.detail} />
             </div>
         </div>
         <div class="mb-6">
             <Label for="email" class="mb-2">Email address</Label>
-            <Input on:input={updateCompanyData} bind:value={company.email} type="email" id="email" placeholder="john.doe@company.com"/>
+            <Input on:input={updateCompanyData} bind:value={companyDTO.email} type="email" id="email" placeholder="john.doe@company.com"/>
         </div>
             <Button on:click={addCompany}>+ Add Company</Button>
     </div>
+    <div style="height: calc(100vh - 72px);">
+      <Sidebar class="sidebar h-full m-3">
+        <SidebarWrapper class="h-full">
+          <SidebarGroup class="h-full">
+            <Search>
+              <Button>Search</Button>
+            </Search>
+            {#each companies as company}
+              <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                <Avatar src={company.companyImage} rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>
+              </div>
+            {/each}
+          </SidebarGroup>
+        </SidebarWrapper>
+      </Sidebar>
+  </div> 
 </div> 
-{/if}

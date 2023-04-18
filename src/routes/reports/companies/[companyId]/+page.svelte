@@ -3,9 +3,12 @@
      import { page } from '$app/stores';
 	import { Avatar, Fileupload, Label, Input, Select, Button, Textarea } from 'flowbite-svelte';
 	import { CompanyUpdateDto } from '../../../../components/Dtos';
-	import { companysHandlers } from '../../../../store';
+	import { companysHandlers, imageHandlers } from '../../../../store';
 	import { onMount } from 'svelte';
-    let companyUpdate = { name: "", email: "", address: "", phone: "",  detail:"", updatedAt: new Date() };
+
+    let companyUpdate = { name: "", email: "", address: "", phone: "",  detail:"", companyImage:"", updatedAt: new Date() };
+
+    let fileUpload: File;
 
     let textareaprops = {
     id: 'details',
@@ -19,9 +22,12 @@
         const companyId = $page.params.companyId;
         const company = await companysHandlers.getById(companyId);
         companyUpdate = {...company , updatedAt: new Date()};
+        console.log(companyUpdate);
+        
     });
 
         async function updateCompany() {
+            let imageURL = await imageHandlers.uploadImage(fileUpload);
             const companyId = $page.params.companyId;
             console.log(companyId);
             
@@ -31,6 +37,7 @@
             companyUpdate.phone,
             companyUpdate.address,
             companyUpdate.detail,
+            imageURL,
             companyUpdate.updatedAt
         ); 
     try {
@@ -56,6 +63,7 @@
               return;
           }
           const choosedFile = this.files[0] || null;
+          fileUpload = choosedFile;
           
           console.log(choosedFile);
           
@@ -81,9 +89,9 @@
         <div class="employee-img my-3">
             <Label class="pb-2" for='small_size' >Company Image</Label>
             <div class="flex space-x-4 m-3">
-                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
+                <Avatar src={companyUpdate.companyImage} size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

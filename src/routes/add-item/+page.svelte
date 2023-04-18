@@ -1,11 +1,12 @@
 <script lang="ts">
     import { addDoc, collection, doc } from "firebase/firestore";
     import { auth, database } from "../../components/lib/firebase/firebase";
-	import { Avatar, Fileupload, Label, Input, Select, Button } from "flowbite-svelte";
+	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search } from "flowbite-svelte";
 	import {ItemDto} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
+	import { onMount } from "svelte";
   
     let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
@@ -36,6 +37,14 @@
     {value:"condiments", name: "Condiments"},
     {value:"other", name: "Other"},
   ]
+
+    let items: any[] = [];
+
+  onMount(async () => {
+
+      const { items:it } = await itemsHandlers.getAllItemsExist();
+      items = it;
+  });
   
   async function addItem() {
     const imageURL = await imageHandlers.uploadImage(fileUpload);
@@ -95,14 +104,14 @@
   
   </script>
     {#if !$authStore.loading}
-  <div class="item-form">
+  <div class="item-form flex flex-row justify-between">
     <div class="item-data m-5">
         <div class="item-img my-3">
             <Label class="pb-2" for='small_size' >Item Image</Label>
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} accept="image/*"/>
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>
@@ -143,5 +152,21 @@
         </div>
             <Button on:click={addItem}>+ Add Item</Button>
     </div>
+    <div style="height: calc(100vh - 72px);">
+        <Sidebar class="sidebar h-full m-3">
+          <SidebarWrapper class="h-full">
+            <SidebarGroup class="h-full">
+              <Search>
+                <Button>Search</Button>
+              </Search>
+              {#each items as item}
+                <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                  <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/employees/{item.id}">{item.name}</a>
+                </div>
+              {/each}
+            </SidebarGroup>
+          </SidebarWrapper>
+        </Sidebar>
+    </div> 
 </div> 
     {/if}

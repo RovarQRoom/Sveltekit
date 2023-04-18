@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
+  import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar} from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { employeesHandlers } from '../../../store';
 
   let employees: any[] = [];
     onMount(async () => {
       employees = await employeesHandlers.getAllEmployees();
+      console.log(employees);
     });
 
     const deleteEmployee = (id: string) => async () => {
@@ -20,6 +21,7 @@
           <TableHeadCell class="!p-4">
             <Checkbox />
           </TableHeadCell>
+          <TableHeadCell>Employee Image</TableHeadCell>
           <TableHeadCell>Employee Name</TableHeadCell>
           <TableHeadCell>Employee Address</TableHeadCell>
           <TableHeadCell>Date of Birth</TableHeadCell>
@@ -36,6 +38,7 @@
             <TableBodyCell class="!p-4">
               <Checkbox />
             </TableBodyCell>
+            <TableBodyCell><Avatar src={employee.employeeImage} alt="Employee Image" rounded/></TableBodyCell>
             <TableBodyCell>{employee.name}</TableBodyCell>
             <TableBodyCell>{employee.address}</TableBodyCell>
             <TableBodyCell>{employee.dob}</TableBodyCell>
