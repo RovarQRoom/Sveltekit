@@ -5,6 +5,7 @@
 	import {ItemDto} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
+	import { imageHandlers } from "../../store";
   
     let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
@@ -37,7 +38,7 @@
   ]
   
   async function addItem() {
-    const imageURL = await itemsHandlers.uploadImage(fileUpload);
+    const imageURL = await imageHandlers.uploadImage(fileUpload);
     console.log(imageURL);
     
     let myItemDto = new ItemDto(

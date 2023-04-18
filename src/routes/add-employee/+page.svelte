@@ -4,8 +4,10 @@
   import { employeesHandlers} from "../../store/employees.store";
   import { Label, Input, Fileupload, Button, Select, Avatar } from 'flowbite-svelte'
 	import { authStore } from "../../store/store";
+	import { imageHandlers } from "../../store";
   let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
+  let fileUpload: File;
 
   let gender = [
     {value:"male", name: "Male"},
@@ -13,7 +15,7 @@
   ]
   
   async function addEmployee() {
-    console.log(auth.currentUser?.uid);
+    let imageURL = await imageHandlers.uploadImage(fileUpload);
     let myEmployeeDto = new EmployeeDto(
         employee.userId = auth.currentUser?.uid || "",
         employee.name,
@@ -22,6 +24,7 @@
         employee.address,
         employee.dob,
         employee.gender,
+        imageURL,
         employee.createdAt,
         ); 
     try {
@@ -72,7 +75,7 @@
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

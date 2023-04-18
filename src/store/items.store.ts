@@ -17,15 +17,6 @@ export const itemsHandlers = {
             console.log('error', err);
         }
     },
-    uploadImage: async (file: File) => {
-        console.log('file', file);
-        const fileRef = ref(storage, `images/${file.name}`);
-        await uploadBytes(fileRef, file);
-        console.log('uploaded');
-        
-        const url = await getDownloadURL(fileRef);
-        return url;
-    },
     updateItem: async (item: ItemUpdateDto, id:string) => {
         const itemsDoc = doc(database, 'items', id);
         await updateDoc(itemsDoc, {...item});
