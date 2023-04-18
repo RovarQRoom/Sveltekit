@@ -22,8 +22,6 @@
         const companyId = $page.params.companyId;
         const company = await companysHandlers.getById(companyId);
         companyUpdate = {...company , updatedAt: new Date()};
-        console.log(companyUpdate);
-        
     });
 
         async function updateCompany() {

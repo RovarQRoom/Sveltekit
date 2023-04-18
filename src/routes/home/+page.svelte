@@ -6,12 +6,13 @@
 
     let items: any[] = [];
     onMount(async () => {
-      const { items:it, itemsCount:itCount } = await itemsHandlers.getAllItemsExist();
+      const { items:it} = await itemsHandlers.getAllItemsExist();
       items = it;
-
-      console.log(items);
-      
     });
+
+    async function addOrder(item:any[]){
+      
+    }
 </script>
 <div class="flex flex-wrap justify-evenly">
   {#each items as item }

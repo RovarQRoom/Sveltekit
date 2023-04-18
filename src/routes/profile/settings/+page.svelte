@@ -8,29 +8,24 @@
 	import { goto } from "$app/navigation";
 
     let userDetails = {
-        firstname: "",
-        lastname: "",
-        email: "",
+        name: auth.currentUser?.displayName || "",
+        email: auth.currentUser?.email || "",
+        profileImage: auth.currentUser?.photoURL || "",
         updatedAt: new Date(),
     };
     let fileUpload: File;
 
-    onMount(async () => {
-        console.log(auth.currentUser);
-    });
-
     async function updateProfile(){
       let imageURL = await imageHandlers.uploadImage(fileUpload);
-      let name = `${userDetails.firstname} ${userDetails.lastname}`;
         const UserDTO = new ProfileUpdateDTO(
-            name,
+            userDetails.name,
             userDetails.email,
             imageURL,
             userDetails.updatedAt,
         );
         try{
           await profileHandlers.updateProfile(UserDTO);
-          goto('/dashboared');
+          goto('/dashboard');
         }catch(error){
           console.log(error);
         }
@@ -69,18 +64,14 @@
     <div class="profile-img my-3">
         <Label class="pb-2" for='small_size' >Profile Image</Label>
         <div class="flex space-x-4 m-3">
-            <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
+            <Avatar src={userDetails.profileImage} size="lg" id="image" rounded/>
         </div>
         <Fileupload id="files" bind:file={fileUpload} size='sm' on:click={pictureUpdate} />
     </div>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
       <div>
-        <Label for="first_name" class="mb-2">First name</Label>
-        <Input type="text" id="first_name" bind:value={userDetails.firstname} placeholder="John" required  />
-      </div>
-      <div>
-        <Label for="last_name" class="mb-2">Last name</Label>
-        <Input type="text" id="last_name" bind:value={userDetails.lastname} placeholder="Doe" required />
+        <Label for="first_name" class="mb-2">Display Name</Label>
+        <Input type="text" id="first_name" bind:value={userDetails.name} placeholder="John" required  />
       </div>
     </div>
     <div class="mb-6">

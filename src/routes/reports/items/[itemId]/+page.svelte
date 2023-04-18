@@ -3,28 +3,49 @@
      import { page } from '$app/stores';
 	import { Avatar, Fileupload, Label, Input, Button, Select } from 'flowbite-svelte';
 	import { ItemUpdateDto } from '../../../../components/Dtos';
-	import { itemsHandlers } from '../../../../store';
+	import { imageHandlers, itemsHandlers } from '../../../../store';
 	import { onMount } from 'svelte';
-    let itemUpdate = { name: "", detail: "", type: "", quantity: 0, buy_price: "", sale_price_more: "", sale_price_less: "",item_created_date: new Date(), item_expired_date: new Date() ,updatedAt: new Date() };
+    let itemUpdate = { name: "", detail: "", type: "", quantity: 0, buy_price: "", sale_price_more: "", sale_price_less: "",item_created_date: new Date(), item_expired_date: new Date(),itemImage:"", updatedAt: new Date() };
 
-        let types = [
-        {value:"oil", name: "Oil"},
-        {value:"water", name: "Water"},
-        {value:"rice", name: "Rice"},
-        {value:"jam", name: "Jam"},
-        {value:"bean", name: "Bean"},
-    ]
+    let fileUpload: File;
+
+    let types = [
+    {value:"oil", name: "Oil"},
+    {value:"water", name: "Water"},
+    {value:"rice", name: "Rice"},
+    {value:"jam", name: "Jam"},
+    {value:"bean", name: "Bean"},
+    {value:"sugar", name: "Sugar"},
+    {value:"salt", name: "Salt"},
+    {value:"flour", name: "Flour"},
+    {value:"spice", name: "Spice"},
+    {value:"breads", name: "Breads"},
+    {value:"cereals", name: "Cereals"},
+    {value:"pasta", name: "Pasta"},
+    {value:"sauce", name: "Sauce"},
+    {value:"dairy", name: "Dairy"},
+    {value:"meat", name: "Meat"},
+    {value:"fish", name: "Fish"},
+    {value:"vegetables", name: "Vegetables"},
+    {value:"fruits", name: "Fruits"},
+    {value:"nuts", name: "Nuts"},
+    {value:"drinks", name: "Drinks"},
+    {value:"alcohol", name: "Alcohol"},
+    {value:"snacks", name: "Snacks"},
+    {value:"desserts", name: "Desserts"},
+    {value:"condiments", name: "Condiments"},
+    {value:"other", name: "Other"},
+  ]
 
     onMount(async () => {
         const itemId = $page.params.itemId;
         const item = await itemsHandlers.getById(itemId);
         itemUpdate = {...item, updatedAt: new Date()};
-        console.log(itemUpdate);
-        
     });
 
         async function updateItem() {
-            const storeId = $page.params.itemId;
+            let imageURL = await imageHandlers.uploadImage(fileUpload);
+            const itemId = $page.params.itemId;
         let myItemDto = new ItemUpdateDto(
             itemUpdate.name,
             itemUpdate.detail,
@@ -35,10 +56,11 @@
             itemUpdate.sale_price_less,
             itemUpdate.item_created_date,
             itemUpdate.item_expired_date,
+            imageURL,
             itemUpdate.updatedAt
         ); 
     try {
-      await itemsHandlers.updateItem(myItemDto,storeId);
+      await itemsHandlers.updateItem(myItemDto,itemId);
     } catch (error) {
       console.log(error);
     }
@@ -60,6 +82,7 @@
               return;
           }
           const choosedFile = this.files[0] || null;
+          fileUpload = choosedFile;
           
           console.log(choosedFile);
           
@@ -85,9 +108,9 @@
         <div class="item-img my-3">
             <Label class="pb-2" for='small_size' >Item Image</Label>
             <div class="flex space-x-4 m-3">
-                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
+                <Avatar src={itemUpdate.itemImage} size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

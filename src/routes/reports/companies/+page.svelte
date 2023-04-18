@@ -16,7 +16,7 @@
     
     <Table class="flex flex-nowrap">
       <div class="divide-y" id="table-width">
-          <TableHead>
+          <TableHead class="contents">
             <TableHeadCell class="!p-4">
               <Checkbox />
             </TableHeadCell>

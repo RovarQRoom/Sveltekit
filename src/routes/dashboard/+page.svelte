@@ -37,8 +37,8 @@
   
 </script>
 {#if !$authStore.loading}
-<div class="flex flex-wrap gap-12 m-5">
-    <Card padding='sm' class="w-96">
+<div class="flex flex-row flex-wrap justify-between m-5">
+    <Card padding='sm' class="w-full my-2">
         <div class="flex">
           <MenuButton />
           <Dropdown class="w-36">
@@ -52,7 +52,7 @@
             <span class=" text-gray-800 dark:text-gray-800 text-lg font-bold">{employeesCount}</span>
         </div>
       </Card>
-      <Card padding='sm' class="w-96">
+      <Card padding='sm' class="w-full my-2">
         <div class="flex">
           <MenuButton />
           <Dropdown class="w-36">
@@ -66,7 +66,7 @@
             <span class=" text-gray-800 dark:text-gray-800 text-lg font-bold">{itemsCount}</span>
         </div>
       </Card>
-      <Card padding='sm' class="w-96">
+      <Card padding='sm' class="w-full my-2">
         <div class="flex">
           <MenuButton />
           <Dropdown class="w-36">
@@ -80,7 +80,7 @@
             <span class=" text-gray-800 dark:text-gray-800 text-lg font-bold">{companysCount}</span>
         </div>
       </Card>
-      <Card padding='sm' class="w-96">
+      <Card padding='sm' class="w-full my-2">
         <div class="flex">
           <MenuButton />
           <Dropdown class="w-36">
@@ -96,11 +96,11 @@
       </Card>
 </div>
 
-    <div class="grid grid-cols-3 gap-6 m-5">
-        <Card padding='sm'>
+    <div class="flex flex-wrap justify-between m-5">
+        <Card padding='sm' class="w-full my-2">
             <div class="flex">
               <MenuButton />
-              <Dropdown class="w-36">
+              <Dropdown class="w-64">
                 <DropdownItem>Edit</DropdownItem>
                 <DropdownItem>Export data</DropdownItem>
               </Dropdown>
@@ -115,26 +115,7 @@
                 </div>
             </div>
           </Card>
-          <Card padding='sm'>
-            <div class="flex">
-              <MenuButton />
-              <Dropdown class="w-36">
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Export data</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </Dropdown>
-            </div>
-            <div class="flex flex-col items-center pb-4">
-              <Avatar size="lg" src="" />
-                <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
-                <div class="flex mt-4 space-x-3 lg:mt-6">
-                  <Button>Add friend</Button>
-                  <Button color="light" class="dark:text-white">Message</Button>
-                </div>
-            </div>
-          </Card>
-          <Card padding='sm'>
+          <Card padding='sm' class="w-full my-2">
             <div class="flex">
               <MenuButton />
               <Dropdown class="w-36">
@@ -153,7 +134,7 @@
                 </div>
             </div>
           </Card>
-          <Card padding='sm'>
+          <Card padding='sm' class="w-full my-2">
             <div class="flex">
               <MenuButton />
               <Dropdown class="w-36">
@@ -172,7 +153,7 @@
                 </div>
             </div>
           </Card>
-          <Card padding='sm'>
+          <Card padding='sm' class="w-full my-2">
             <div class="flex">
               <MenuButton />
               <Dropdown class="w-36">
@@ -191,7 +172,26 @@
                 </div>
             </div>
           </Card>
-          <Card padding='sm'>
+          <Card padding='sm' class="w-full my-2">
+            <div class="flex">
+              <MenuButton />
+              <Dropdown class="w-36">
+                <DropdownItem>Edit</DropdownItem>
+                <DropdownItem>Export data</DropdownItem>
+                <DropdownItem>Delete</DropdownItem>
+              </Dropdown>
+            </div>
+            <div class="flex flex-col items-center pb-4">
+              <Avatar size="lg" src="" />
+                <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
+                <div class="flex mt-4 space-x-3 lg:mt-6">
+                  <Button>Add friend</Button>
+                  <Button color="light" class="dark:text-white">Message</Button>
+                </div>
+            </div>
+          </Card>
+          <Card padding='sm' class="w-full my-2">
             <div class="flex">
               <MenuButton />
               <Dropdown class="w-36">

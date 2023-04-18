@@ -71,9 +71,9 @@
 			{#if auth.currentUser?.photoURL}
 			<Avatar
 				id="user-drop"
-				src="https://w0.peakpx.com/wallpaper/481/33/HD-wallpaper-jill-valentine-capcom-microsoft-playstation-resident-evil-xbox.jpg"
+				src={auth.currentUser?.photoURL}
 				dot={{ color: 'green' }}
-			/>
+			 rounded/>
 			{:else}
 			<Avatar id="user-drop" src="https://cdnen.samurai-gamers.com/wp-content/uploads/2023/03/20145403/sg-re4-remake-ashley-graham-character-icon.jpg" />
 			{/if}

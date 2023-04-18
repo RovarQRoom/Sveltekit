@@ -3,9 +3,9 @@
      import { page } from '$app/stores';
 	import { Avatar, Fileupload, Label, Input, Select, Button } from 'flowbite-svelte';
 	import { EmployeeUpdateDto } from '../../../../components/Dtos';
-	import { employeesHandlers } from '../../../../store';
+	import { employeesHandlers, imageHandlers } from '../../../../store';
 	import { onMount } from 'svelte';
-    let employeeUpdate = { name: "", address: "",  email: "", phone: "", updatedAt: new Date() };
+    let employeeUpdate = { name: "", address: "",  email: "", phone: "", employeeImage:"", updatedAt: new Date() };
 
     onMount(async () => {
         const employeeId = $page.params.employeeId;
@@ -13,13 +13,17 @@
         employeeUpdate = {...employee, updatedAt: new Date()};
     });
 
+    let fileUpload: File;
+
         async function updateEmployee() {
+            let imageURL = await imageHandlers.uploadImage(fileUpload);
             const employeeId = $page.params.employeeId;
         let myEmployeeDto = new EmployeeUpdateDto(
             employeeUpdate.name,
             employeeUpdate.email,
             employeeUpdate.phone,
             employeeUpdate.address,
+            imageURL,
             employeeUpdate.updatedAt
         ); 
     try {
@@ -45,7 +49,8 @@
               return;
           }
           const choosedFile = this.files[0] || null;
-          
+          fileUpload = choosedFile;
+
           console.log(choosedFile);
           
           if (choosedFile) {
@@ -70,9 +75,9 @@
         <div class="employee-img my-3">
             <Label class="pb-2" for='small_size' >Employee Image</Label>
             <div class="flex space-x-4 m-3">
-                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
+                <Avatar src={employeeUpdate.employeeImage} size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

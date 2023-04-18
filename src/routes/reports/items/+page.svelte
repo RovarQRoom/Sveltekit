@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox} from 'flowbite-svelte';
+    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar} from 'flowbite-svelte';
       import { onMount } from 'svelte';
       import { itemsHandlers } from '../../../store';
   
@@ -16,10 +16,11 @@
     
     <Table class="flex flex-nowrap">
       <div class="divide-y" id="table-width">
-          <TableHead>
+          <TableHead class="contents">
             <TableHeadCell class="!p-4">
               <Checkbox />
             </TableHeadCell>
+            <TableHeadCell>Item Image</TableHeadCell>
             <TableHeadCell>Item Name</TableHeadCell>
             <TableHeadCell>Item Details</TableHeadCell>
             <TableHeadCell>Item Type</TableHeadCell>
@@ -39,6 +40,7 @@
               <TableBodyCell class="!p-4">
                 <Checkbox />
               </TableBodyCell>
+              <TableBodyCell><Avatar src={item.itemImage} alt="Item Image" rounded/></TableBodyCell>
               <TableBodyCell>{item.name}</TableBodyCell>
               <TableBodyCell>{item.detail}</TableBodyCell>
               <TableBodyCell>{item.type}</TableBodyCell>
