@@ -9,9 +9,10 @@ export class ItemDto {
     sale_price_less: string;
     item_created_date: Date;
     item_expired_date: Date;
+    itemImage: string;
     createdAt: Date;
     deletedAt: Date | null = null;
-    constructor(userid: string, name: string, detail: string, type: string, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, createdAt: Date, deletedAt: Date | null = null) {
+    constructor(userid: string, name: string, detail: string, type: string, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, itemImage: string  ,createdAt: Date, deletedAt: Date | null = null) {
         this.userid = userid;
         this.name = name;
         this.detail = detail;
@@ -22,6 +23,7 @@ export class ItemDto {
         this.sale_price_less = sale_price_less;
         this.item_created_date = item_created_date;
         this.item_expired_date = item_expired_date;
+        this.itemImage = itemImage;
         this.createdAt = createdAt;
         this.deletedAt = deletedAt;
     }
@@ -37,8 +39,9 @@ export class ItemUpdateDto {
     sale_price_less: string;
     item_created_date: Date;
     item_expired_date: Date;
+    itemImage: string;
     updatedAt: Date;
-    constructor(name: string, detail: string, type: string, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, updatedAt: Date) {
+    constructor(name: string, detail: string, type: string, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, itemImage:string, updatedAt: Date) {
         this.name = name;
         this.detail = detail;
         this.type = type;
@@ -48,6 +51,7 @@ export class ItemUpdateDto {
         this.sale_price_less = sale_price_less;
         this.item_created_date = item_created_date;
         this.item_expired_date = item_expired_date;
+        this.itemImage = itemImage;
         this.updatedAt = updatedAt;
     }
 }

@@ -16,7 +16,7 @@
    
      
      async function addStore() {
-       console.log(auth.currentUser?.uid);
+      
        let myCompanyDto = new StoreDto(
            store.userId = auth.currentUser?.uid || "",
            store.name,

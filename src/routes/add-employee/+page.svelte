@@ -70,7 +70,7 @@
         <div class="employee-img my-3">
             <Label class="pb-2" for='small_size' >Employee Image</Label>
             <div class="flex space-x-4 m-3">
-                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
+                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
             </div>
             <Fileupload id="files" size='sm' on:click={pictureUpdate} />
         </div>

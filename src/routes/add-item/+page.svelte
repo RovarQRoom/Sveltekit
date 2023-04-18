@@ -6,18 +6,40 @@
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
   
-    let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date() ,createdAt: new Date() };
-  
+    let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
+    let fileUpload: File;
     let types = [
     {value:"oil", name: "Oil"},
     {value:"water", name: "Water"},
     {value:"rice", name: "Rice"},
     {value:"jam", name: "Jam"},
     {value:"bean", name: "Bean"},
+    {value:"sugar", name: "Sugar"},
+    {value:"salt", name: "Salt"},
+    {value:"flour", name: "Flour"},
+    {value:"spice", name: "Spice"},
+    {value:"breads", name: "Breads"},
+    {value:"cereals", name: "Cereals"},
+    {value:"pasta", name: "Pasta"},
+    {value:"sauce", name: "Sauce"},
+    {value:"dairy", name: "Dairy"},
+    {value:"meat", name: "Meat"},
+    {value:"fish", name: "Fish"},
+    {value:"vegetables", name: "Vegetables"},
+    {value:"fruits", name: "Fruits"},
+    {value:"nuts", name: "Nuts"},
+    {value:"drinks", name: "Drinks"},
+    {value:"alcohol", name: "Alcohol"},
+    {value:"snacks", name: "Snacks"},
+    {value:"desserts", name: "Desserts"},
+    {value:"condiments", name: "Condiments"},
+    {value:"other", name: "Other"},
   ]
   
   async function addItem() {
-    console.log(auth.currentUser?.uid);
+    const imageURL = await itemsHandlers.uploadImage(fileUpload);
+    console.log(imageURL);
+    
     let myItemDto = new ItemDto(
         itemDto.userId = auth.currentUser?.uid || "",
         itemDto.name,
@@ -29,8 +51,9 @@
         itemDto.salesPriceDown,
         itemDto.itemCreatedDate,
         itemDto.itemExpiredDate,
+        imageURL,
         itemDto.createdAt,
-        ); 
+    ); 
     try {
       await itemsHandlers.addItem(myItemDto);
     } catch (error) {
@@ -42,18 +65,18 @@
     itemDto = { ...itemDto, [event.target.name]: event.target.value };
   }
 
-  function pictureUpdate(event: any) {
+  function pictureUpdate() {
       const img = document.querySelector('#image');
       const files = document.querySelector('#files') as HTMLInputElement;
-
+     
       files.addEventListener('change', function() {
           // this refer to the file
           if(this.files === null) {
               return;
           }
           const choosedFile = this.files[0] || null;
-          
-          console.log(choosedFile);
+          fileUpload = choosedFile;
+          console.log("File : ",choosedFile);
           
           if (choosedFile) {
               const reader = new FileReader();
@@ -66,7 +89,7 @@
               });
               reader.readAsDataURL(choosedFile);
           }
-      })
+      });
   }
   
   </script>
@@ -78,7 +101,7 @@
             <div class="flex space-x-4 m-3">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

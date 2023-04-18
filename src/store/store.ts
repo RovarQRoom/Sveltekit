@@ -1,7 +1,7 @@
-import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationResult, type UserCredential, type User } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationResult, type UserCredential, type User, updateProfile, updateEmail } from 'firebase/auth';
 import { writable } from 'svelte/store';
-import { auth } from '../components/lib/firebase/firebase';
-
+import { auth} from '../components/lib/firebase/firebase';
+import type { ProfileUpdateDTO } from '../components/Dtos/Profile.DTO';
 
 
 export const authStore = writable<{
@@ -52,3 +52,25 @@ export const authHandlers = {
 		await signOut(auth);
 	}
 };
+
+export const profileHandlers = {
+    updateProfile: async (profile:ProfileUpdateDTO) => {
+        const user = auth.currentUser;
+        if(user){
+            
+            try {
+                updateProfile(user, {
+                    displayName: profile.name,
+                    photoURL: profile.photoURL
+                });
+                console.log('Updated Profile');
+                
+
+                updateEmail(user, profile.email);
+                console.log('Updated Email');
+            } catch (error) {
+                console.log('error', error);
+            }         
+        }
+    }
+}

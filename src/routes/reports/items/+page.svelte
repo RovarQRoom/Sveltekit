@@ -53,7 +53,7 @@
               <TableBodyCell>{item.deletedAt}</TableBodyCell>
               {#if !item.deletedAt}
               <TableBodyCell>
-                <a href="/reports/companies/{item.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
+                <a href="/reports/items/{item.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
                   Edit
                 </a>
                 <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >

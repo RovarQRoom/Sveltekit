@@ -7,7 +7,6 @@
 	import { Avatar, Dropdown, DropdownItem, DropdownHeader, DropdownDivider } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { sineIn } from 'svelte/easing';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
 
@@ -17,15 +16,16 @@
 	const nonAuthRoutes = ['/login'];
 
 	onMount(() => {
+	
 		const unSubscribe = auth.onAuthStateChanged(async (user) => {
 			const currentPath = window.location.pathname;
-
+			console.log('Current Path', user);
 			if (!user && !nonAuthRoutes.includes(currentPath)) {
 				goto(`/login`);
 			}
 
 			if (user && nonAuthRoutes.includes(currentPath)) {
-				window.location.href = '/dashboard';
+				goto('/dashboard');
 				return;
 			}
 
@@ -63,24 +63,35 @@
 	});
 </script>
 
+{#if !$authStore.loading}
 {#if $page.url.pathname !== '/login'}
 	<nav
-		class="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
-		style="background-color: grey;"
-	>
+		class="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
 		<div class="max-w-screen-xl flex flex-wrap justify-center items-center mx-auto p-4">
+			{#if auth.currentUser?.photoURL}
 			<Avatar
 				id="user-drop"
-				src="https://cdnen.samurai-gamers.com/wp-content/uploads/2023/03/20145403/sg-re4-remake-ashley-graham-character-icon.jpg"
+				src="https://w0.peakpx.com/wallpaper/481/33/HD-wallpaper-jill-valentine-capcom-microsoft-playstation-resident-evil-xbox.jpg"
 				dot={{ color: 'green' }}
 			/>
+			{:else}
+			<Avatar id="user-drop" src="https://cdnen.samurai-gamers.com/wp-content/uploads/2023/03/20145403/sg-re4-remake-ashley-graham-character-icon.jpg" />
+			{/if}
 			<Dropdown triggeredBy="#user-drop">
 				<DropdownHeader>
+					{#if auth.currentUser?.displayName}
+					<span class="block text-sm"> {auth.currentUser?.displayName} </span>
+					{:else}
 					<span class="block text-sm"> Ashley Gramham </span>
+					{/if}
+					{#if auth.currentUser?.email}
 					<span class="block truncate text-sm font-medium"> Your Email </span>
+					{:else}
+					<span class="block truncate text-sm font-medium">{auth.currentUser?.email}</span>
+					{/if}
 				</DropdownHeader>
 				<DropdownItem href="/dashboard">Dashboard</DropdownItem>
-				<DropdownItem>Settings</DropdownItem>
+				<DropdownItem href="/profile/settings">Settings</DropdownItem>
 				<DropdownDivider />
 				<DropdownItem on:click={authHandlers.logout}>Sign out</DropdownItem>
 			</Dropdown>
@@ -217,11 +228,13 @@
 			</Sidebar>
 		</div>
 	{/if}
-
+	
+		
 	<div>
 		<slot />
 	</div>
 </div>
+{/if}
 <style>
 	.h-screen{
 		height: 100vh ;
