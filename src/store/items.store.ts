@@ -1,10 +1,9 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import type { ItemDto, ItemUpdateDto } from '../components/Dtos';
-import { auth, database, storage } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where } from 'firebase/firestore';
+import { auth, database } from '../components/lib/firebase/firebase';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where, onSnapshot, Timestamp, and } from 'firebase/firestore';
 
 
-const itemsCollection = collection(database, 'items');
+export const itemsCollection = collection(database, 'items');
 
 export const itemsHandlers = {
     addItem: async (item: ItemDto) => {
@@ -43,6 +42,17 @@ export const itemsHandlers = {
     getAllItems: async () => {
         const items = [] as any;
         const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            items.push({...doc.data(), id: doc.id});
+        });
+        console.log('items', items);
+        return items;
+    },
+    getAllItemsByDate: async (date1:Date,date2:Date) => {
+        const items = [] as any;
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('item_created_date', '>=', date1), where('item_created_date', '<=', date2));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {

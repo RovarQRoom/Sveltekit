@@ -40,6 +40,7 @@
   ]
 
     let items: any[] = [];
+    let searchName = "";
 
   onMount(async () => {
 
@@ -81,6 +82,13 @@
         await itemsHandlers.deleteItem(id);
         window.location.reload();
       };
+  
+  function searchItem() {
+      const search = items.filter((item) => item.name.toLowerCase().includes(searchName.toLowerCase()));
+      items = search;
+      console.log("Searched : ",search);
+      
+  }
 
   function pictureUpdate() {
       const img = document.querySelector('#image');
@@ -163,8 +171,8 @@
         <Sidebar class="sidebar h-full m-3">
           <SidebarWrapper class="h-full">
             <SidebarGroup class="h-full">
-              <Search>
-                <Button>Search</Button>
+              <Search bind:value={searchName}>
+                <Button on:click={searchItem}>Search</Button>
               </Search>
               {#each items as item}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">

@@ -5,18 +5,22 @@ import { getAuth } from "firebase/auth";
 import { getStorage} from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
+let process: any;
+
+const ENVIROMENT = process?.env ? process.env : import.meta.env;
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+export const dgraph_config = ENVIROMENT.VITE_DGRAPH_ENDPOINT;
 const firebaseConfig = {
-  apiKey: "AIzaSyCYbRRnPqyt29FIg87bz8zjDIsx3VbKOjo",
-  authDomain: "online-shopping-f5190.firebaseapp.com",
-  databaseURL: "https://online-shopping-f5190-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "online-shopping-f5190",
-  storageBucket: "online-shopping-f5190.appspot.com",
-  messagingSenderId: "655726050512",
-  appId: "1:655726050512:web:db31effb905678296732d5",
-  measurementId: "G-4J3XME2BZF"
+  apiKey: ENVIROMENT.VITE_FIREBASE_APIKEY,
+  authDomain: ENVIROMENT.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: ENVIROMENT.VITE_FIREBASE_PROJECT_ID,
+  projectId: ENVIROMENT.VITE_FIREBASE_STORAGE_BUCKET,
+  storageBucket: ENVIROMENT.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  messagingSenderId: ENVIROMENT.VITE_FIREBASE_APP_ID,
+  appId: ENVIROMENT.VITE_FIREBASE_MEASUREMENT_ID,
+  measurementId: ENVIROMENT.VITE_DGRAPH_ENDPOINT
 };
 
 // Initialize Firebase
