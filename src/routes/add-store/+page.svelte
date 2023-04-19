@@ -42,7 +42,7 @@
            ); 
        try {
          await storesHandlers.addStore(myCompanyDto);
-         goto('/add-store');
+         window.location.reload();
        } catch (error) {
          console.log(error);
        }
@@ -51,6 +51,10 @@
      function updateStoreData(event: any) {
        storeDTO = { ...storeDTO, [event.target.name]: event.target.value };
      }
+
+     const deleteEmployee = (id: string) => async () => {
+        await storesHandlers.deleteStore(id);
+      };
    
      function pictureUpdate(event: any) {
          const img = document.querySelector('#image');
@@ -127,6 +131,9 @@
               {#each stores as store}
                 <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                   <Avatar src={store.storeImage} rounded border /><a class="m-2 text-sm" href="/reports/stores/{store.id}">{store.name}</a>
+                  <button on:click={deleteEmployee(store.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                    Remove
+                  </button>
                 </div>
               {/each}
             </SidebarGroup>

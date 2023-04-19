@@ -6,6 +6,7 @@
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
+	import { goto } from "$app/navigation";
   let companyDTO = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
 
   let fileUpload: File;
@@ -40,6 +41,7 @@
         ); 
     try {
       await companysHandlers.addCompany(myCompanyDto);
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -48,6 +50,10 @@
   function updateCompanyData(event: any) {
     companyDTO = { ...companyDTO, [event.target.name]: event.target.value };
   }
+
+  const deleteEmployee = (id: string) => async () => {
+        await companysHandlers.deleteCompany(id);
+      };
 
   function pictureUpdate(event: any) {
       const img = document.querySelector('#image');
@@ -120,8 +126,11 @@
               <Button>Search</Button>
             </Search>
             {#each companies as company}
-              <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+              <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                 <Avatar src={company.companyImage} rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>
+                <button on:click={deleteEmployee(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                  Remove
+                </button>
               </div>
             {/each}
           </SidebarGroup>

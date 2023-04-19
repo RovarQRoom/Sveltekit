@@ -7,6 +7,7 @@
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
+	import { goto } from "$app/navigation";
   
     let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
@@ -66,6 +67,7 @@
     ); 
     try {
       await itemsHandlers.addItem(myItemDto);
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -74,6 +76,11 @@
   function updateItemData(event: any) {
     itemDto = { ...itemDto, [event.target.name]: event.target.value };
   }
+
+   const deleteEmployee = (id: string) => async () => {
+        await itemsHandlers.deleteItem(id);
+        window.location.reload();
+      };
 
   function pictureUpdate() {
       const img = document.querySelector('#image');
@@ -160,8 +167,11 @@
                 <Button>Search</Button>
               </Search>
               {#each items as item}
-                <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
-                  <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/employees/{item.id}">{item.name}</a>
+                <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                  <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/items/{item.id}">{item.name}</a>
+                  <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                  Remove
+                </button>
                 </div>
               {/each}
             </SidebarGroup>

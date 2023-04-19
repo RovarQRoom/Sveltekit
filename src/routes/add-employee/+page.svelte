@@ -3,9 +3,9 @@
   import { auth } from "../../components/lib/firebase/firebase";
   import { employeesHandlers} from "../../store/employees.store";
   import { Label, Input, Fileupload, Button, Select, Avatar, Sidebar, SidebarWrapper, SidebarGroup, SidebarItem, Search } from 'flowbite-svelte'
-	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
+	import { goto } from "$app/navigation";
   let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
@@ -37,6 +37,7 @@
         ); 
     try {
       await employeesHandlers.addEmployee(myEmployeeDto);
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -45,6 +46,11 @@
   function updateEmployeeData(event: any) {
     employee = { ...employee, [event.target.name]: event.target.value };
   }
+
+  const deleteEmployee = (id: string) => async () => {
+      await employeesHandlers.deleteEmployee(id);
+      window.location.reload();
+    };
 
   function pictureUpdate(event: any) {
       const img = document.querySelector('#image');
@@ -81,7 +87,7 @@
     <div class="employee-data m-5">
         <div class="employee-img my-3">
             <Label class="pb-2" for='small_size' >Employee Image</Label>
-            <div class="flex space-x-4 m-3">
+            <div class="flex space-x-4 m-3" id="logo">
                 <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" size="lg" id="image" rounded/>
             </div>
             <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} accept="image/*"/>
@@ -121,8 +127,11 @@
                   <Button>Search</Button>
                 </Search>
                 {#each employees as employee}
-                  <div class="flex flex-row py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
-                    <Avatar src={employee.employeeImage} rounded border /><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>
+                  <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                    <Avatar src={employee.employeeImage} rounded border/><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>
+                      <button on:click={deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                        Remove
+                      </button>
                   </div>
                 {/each}
               </SidebarGroup>

@@ -7,11 +7,6 @@
       onMount(async () => {
         companies = await companysHandlers.getAllCompanys();
       });
-  
-      const deleteEmployee = (id: string) => async () => {
-        await companysHandlers.deleteCompany(id);
-      };
-  
     </script>
     
     <Table class="flex flex-nowrap">
@@ -45,15 +40,6 @@
               <TableBodyCell>{company.createdAt}</TableBodyCell>
               <TableBodyCell>{company.updatedAt}</TableBodyCell>
               <TableBodyCell>{company.deletedAt}</TableBodyCell>
-              {#if !company.deletedAt}
-              <TableBodyCell>
-                <a href="/reports/companies/{company.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                  Edit
-                </a>
-                <button on:click={deleteEmployee(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
-                  Remove
-                </button></TableBodyCell>
-            {/if}
           </TableBodyRow>
         </TableBody>
           {/each}

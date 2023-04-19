@@ -8,10 +8,6 @@
         items = await itemsHandlers.getAllItems();
       });
   
-      const deleteEmployee = (id: string) => async () => {
-        await itemsHandlers.deleteItem(id);
-      };
-  
     </script>
     
     <Table class="flex flex-nowrap">
@@ -53,15 +49,6 @@
               <TableBodyCell>{item.createdAt}</TableBodyCell>
               <TableBodyCell>{item.updatedAt}</TableBodyCell>
               <TableBodyCell>{item.deletedAt}</TableBodyCell>
-              {#if !item.deletedAt}
-              <TableBodyCell>
-                <a href="/reports/items/{item.id}" class="font-medium text-blue-600 hover:underline dark:text-blue-500">
-                  Edit
-                </a>
-                <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
-                  Remove
-                </button></TableBodyCell>
-            {/if}
           </TableBodyRow>
         </TableBody>
           {/each}

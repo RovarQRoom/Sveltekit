@@ -9,13 +9,14 @@ import { getStorage} from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBUOeZTSqNIXYSD9c975zKyAzGXRgIFUoA",
-  authDomain: "online-shopping-995e6.firebaseapp.com",
-  projectId: "online-shopping-995e6",
-  storageBucket: "online-shopping-995e6.appspot.com",
-  messagingSenderId: "529263171472",
-  appId: "1:529263171472:web:cd42991cd021ab32edc515",
-  measurementId: "G-MJW8RMBMJD"
+  apiKey: "AIzaSyCYbRRnPqyt29FIg87bz8zjDIsx3VbKOjo",
+  authDomain: "online-shopping-f5190.firebaseapp.com",
+  databaseURL: "https://online-shopping-f5190-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "online-shopping-f5190",
+  storageBucket: "online-shopping-f5190.appspot.com",
+  messagingSenderId: "655726050512",
+  appId: "1:655726050512:web:db31effb905678296732d5",
+  measurementId: "G-4J3XME2BZF"
 };
 
 // Initialize Firebase

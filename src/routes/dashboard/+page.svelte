@@ -36,7 +36,6 @@
   });
   
 </script>
-{#if !$authStore.loading}
 <div class="flex flex-row flex-wrap justify-between m-5">
     <Card padding='sm' class="w-full my-2">
         <div class="flex">
@@ -211,4 +210,3 @@
             </div>
           </Card>
     </div>
-{/if}
