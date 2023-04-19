@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { addDoc, collection, doc } from "firebase/firestore";
-    import { auth, database } from "../../components/lib/firebase/firebase";
+  import { auth } from "../../components/lib/firebase/firebase";
 	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search } from "flowbite-svelte";
 	import {ItemDto} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
-	import { goto } from "$app/navigation";
+  import algoliasearch from 'algoliasearch';
   
     let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
@@ -40,7 +39,8 @@
   ]
 
     let items: any[] = [];
-    let searchName = "";
+
+    let searchName = '';
 
   onMount(async () => {
 
@@ -83,10 +83,13 @@
         window.location.reload();
       };
   
-  function searchItem() {
-      const search = items.filter((item) => item.name.toLowerCase().includes(searchName.toLowerCase()));
-      items = search;
-      console.log("Searched : ",search);
+  async function searchItem() {
+      if(searchName === '') {
+          const { items:it } = await itemsHandlers.getAllItemsExist();
+          items = it;
+      }else {
+          items = await itemsHandlers.getAllItemsByName(searchName);
+      }
       
   }
 
@@ -172,7 +175,7 @@
           <SidebarWrapper class="h-full">
             <SidebarGroup class="h-full">
               <Search bind:value={searchName}>
-                <Button on:click={searchItem}>Search</Button>
+                <Button on:click={searchItem} size="xs" class="rounded-e-full">Search</Button>
               </Search>
               {#each items as item}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">

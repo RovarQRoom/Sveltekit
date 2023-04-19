@@ -61,6 +61,17 @@ export const itemsHandlers = {
         console.log('items', items);
         return items;
     },
+    getAllItemsByName: async (search:string) => {
+        const items = [] as any;
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid),where('name', '>=', search),where('name', '<=', search + '\uf8ff'));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            items.push({...doc.data(), id: doc.id});
+        });
+        console.log('items', items);
+        return items;
+    },
     getById: async (id: string) => {
         let item: any = {};
         const itemDoc = await doc(database, 'items', id);
