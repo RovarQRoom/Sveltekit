@@ -1,6 +1,6 @@
 import type { ItemDto, ItemUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where, onSnapshot, Timestamp, and } from 'firebase/firestore';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where} from 'firebase/firestore';
 
 
 export const itemsCollection = collection(database, 'items');
