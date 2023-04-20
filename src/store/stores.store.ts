@@ -23,7 +23,7 @@ export const storesHandlers = {
     },
     deleteStore: async (id:string) => {
         const storeDoc = doc(database, 'store', id);
-        await updateDoc(storeDoc, {deletedAt: new Date()});
+        await updateDoc(storeDoc, {updatedAt: new Date(),deletedAt: new Date()});
         console.log('deleted');
     },
     getAllStoresExist: async () => {

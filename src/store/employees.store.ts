@@ -23,7 +23,7 @@ export const employeesHandlers = {
     },
     deleteEmployee: async (id:string) => {
         const employeesDoc = doc(database, 'employees', id);
-        await updateDoc(employeesDoc,{deletedAt: new Date()});
+        await updateDoc(employeesDoc,{updatedAt: new Date(),deletedAt: new Date()});
         console.log('deleted' , employeesDoc);
     },
     getAllEmployeesExist: async () => {

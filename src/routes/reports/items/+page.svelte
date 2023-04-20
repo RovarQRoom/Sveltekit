@@ -70,10 +70,10 @@
               <TableBodyCell>{item.item_created_date}</TableBodyCell>
               <TableBodyCell>{item.item_expired_date}</TableBodyCell>
               <TableBodyCell>{item.createdAt.toDate().toLocaleDateString()}</TableBodyCell>
-              {#if item.updatedAt}
+              {#if item.updatedAt != null}
               <TableBodyCell>{item.updatedAt.toDate().toLocaleDateString()}</TableBodyCell>
               {/if}
-              {#if item.deletedAt}
+              {#if item.deletedAt != null}
               <TableBodyCell>{item.deletedAt.toDate().toLocaleDateString()}</TableBodyCell>
               {/if}
           </TableBodyRow>

@@ -23,14 +23,14 @@ export const itemsHandlers = {
     },
     deleteItem: async (id:string) => {
         const itemsDoc = doc(database, 'items', id);
-        await updateDoc(itemsDoc, {deletedAt: new Date()});
+        await updateDoc(itemsDoc, {updatedAt: new Date(),deletedAt: new Date()});
         console.log('deleted');
     },
     getAllItemsExist: async () => {
         const items = [] as any;
        const user  =  auth.currentUser;
        console.log('user', user);
-        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid));
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
@@ -63,7 +63,7 @@ export const itemsHandlers = {
     },
     getAllItemsByName: async (search:string) => {
         const items = [] as any;
-        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid),where('name', '>=', search),where('name', '<=', search + '\uf8ff'));
+        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid),where('name', '>=', search.toLocaleUpperCase()),where('name', '<=', search.toLocaleLowerCase() + '\uf8ff'));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {

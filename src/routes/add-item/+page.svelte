@@ -1,12 +1,13 @@
 <script lang="ts">
   import { auth } from "../../components/lib/firebase/firebase";
-	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search } from "flowbite-svelte";
+	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search, Dropdown, DropdownItem } from "flowbite-svelte";
 	import {ItemDto} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
 	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
   import algoliasearch from 'algoliasearch';
+	import { algoliaConfig } from "$lib";
   
     let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
@@ -40,13 +41,37 @@
 
     let items: any[] = [];
 
-    let searchName = '';
+    let searchClient;
+    let index: any;
+
+    let query = '';
 
   onMount(async () => {
 
       const { items:it } = await itemsHandlers.getAllItemsExist();
       items = it;
+
+      searchClient = algoliaConfig.algoliaSerach;
+
+      index = searchClient.initIndex('items');
+      index.search(query).then(console.log);
+
+
   });
+
+  $: if(query !== '') {
+        searchItem();
+        let dropdown = document.querySelector('#Dropdown') as HTMLElement;
+        console.log(dropdown);
+        
+        if(dropdown !== null) {
+          dropdown.classList.add('show');
+          console.log(dropdown);
+          
+        }
+      }else{
+        searchItem();
+      }
   
   async function addItem() {
     const imageURL = await imageHandlers.uploadImage(fileUpload);
@@ -78,19 +103,22 @@
     itemDto = { ...itemDto, [event.target.name]: event.target.value };
   }
 
-   const deleteEmployee = (id: string) => async () => {
+   const deleteItem = (id: string) => async () => {
         await itemsHandlers.deleteItem(id);
+        console.log("Item Deleted", id);
+        
         window.location.reload();
       };
   
   async function searchItem() {
-      if(searchName === '') {
-          const { items:it } = await itemsHandlers.getAllItemsExist();
-          items = it;
-      }else {
-          items = await itemsHandlers.getAllItemsByName(searchName);
-      }
-      
+    if(query === '') {
+      const { items:it } = await itemsHandlers.getAllItemsExist();
+      items = it;
+    }else {
+        const result = await index.search(query);
+        items = result.hits;
+        console.log(items);
+    } 
   }
 
   function pictureUpdate() {
@@ -174,13 +202,25 @@
         <Sidebar class="sidebar h-full m-3">
           <SidebarWrapper class="h-full">
             <SidebarGroup class="h-full">
-              <Search bind:value={searchName}>
-                <Button on:click={searchItem} size="xs" class="rounded-e-full">Search</Button>
+              <Search bind:value={query}>
+                <!-- <Button on:click={searchItem} size="xs" class="rounded-e-full">Search</Button> -->
               </Search>
+              <!-- <Dropdown class="flex flex-col justify-between py-1 h-full blocked " id="Dropdown">
+                {#each items as item}
+                <DropdownItem class="flex items-center text-base font-semibold gap-2">
+                  <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                    <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/items/{item.id}">{item.name}</a>
+                    <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                    Remove
+                  </button>
+                  </div>
+                </DropdownItem>
+                  {/each}
+              </Dropdown> -->
               {#each items as item}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                   <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/items/{item.id}">{item.name}</a>
-                  <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                  <button on:click={deleteItem(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                   Remove
                 </button>
                 </div>
