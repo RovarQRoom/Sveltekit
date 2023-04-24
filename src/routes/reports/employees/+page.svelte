@@ -40,9 +40,15 @@
             <TableBodyCell>{employee.email}</TableBodyCell>
             <TableBodyCell>{employee.gender}</TableBodyCell>
             <TableBodyCell>{employee.phone}</TableBodyCell>
-            <TableBodyCell>{employee.createdAt}</TableBodyCell>
-            <TableBodyCell>{employee.updatedAt}</TableBodyCell>
-            <TableBodyCell>{employee.deletedAt}</TableBodyCell>
+            {#if employee.createdAt !== null}
+            <TableBodyCell>{employee.createdAt.toDate().toLocaleDateString()}</TableBodyCell>
+            {/if}
+            {#if employee.updatedAt !== null}
+            <TableBodyCell>{employee.updatedAt.toDate().toLocaleDateString()}</TableBodyCell>
+            {/if}
+            {#if employee.deletedAt !== null}
+            <TableBodyCell>{employee.deletedAt.toDate().toLocaleDateString()}</TableBodyCell>
+            {/if}
         </TableBodyRow>
       </TableBody>
         {/each}

@@ -1,12 +1,11 @@
 <script lang="ts">
   import { CompanyDto } from "../../components/Dtos/Companys.DTO";
   import { auth } from "../../components/lib/firebase/firebase";
-  import { Label, Input, Fileupload, Button, Select, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
+  import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
-	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
-	import { goto } from "$app/navigation";
+	import { algoliaConfig } from "$lib";
   let companyDTO = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
 
   let fileUpload: File;
@@ -21,10 +20,36 @@
 
   let companies: any[] = [];
 
+  let searchClient;
+    let index: any;
+
+    let query = '';
+
   onMount(async () => {
     const { companys:comp } = await companysHandlers.getAllCompanysExist();
     companies = comp;
+
+    searchClient = algoliaConfig.algoliaSerach;
+      index = searchClient.initIndex('companies');
+      index.search(query).then(console.log);
   });
+
+  $: if(query !== '') {
+        searchItem();
+      }else{
+        searchItem();
+      }
+
+    async function searchItem() {
+    if(query === '') {
+      const { companys:comp } = await companysHandlers.getAllCompanysExist();
+      companies = comp;
+    }else {
+        const result = await index.search(query);
+        companies = result.hits;
+        console.log(companies);
+    } 
+  }
 
   
   async function addCompany() {
@@ -53,6 +78,7 @@
 
   const deleteEmployee = (id: string) => async () => {
         await companysHandlers.deleteCompany(id);
+        window.location.reload();
       };
 
   function pictureUpdate(event: any) {
@@ -122,9 +148,7 @@
       <Sidebar class="sidebar h-full m-3">
         <SidebarWrapper class="h-full">
           <SidebarGroup class="h-full">
-            <Search>
-              <Button>Search</Button>
-            </Search>
+            <Search bind:value={query}></Search>
             {#each companies as company}
               <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                 <Avatar src={company.companyImage} rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>

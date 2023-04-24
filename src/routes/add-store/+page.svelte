@@ -7,6 +7,7 @@
 	import { imageHandlers } from '../../store';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { algoliaConfig } from '$lib';
      let storeDTO = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
    
      let fileUpload: File;
@@ -21,10 +22,36 @@
 
      let stores: any[] = [];
 
+     let searchClient;
+    let index: any;
+
+    let query = '';
+
      onMount(async () => {
        const { stores:store } = await storesHandlers.getAllStoresExist();
        stores = store;
+
+       searchClient = algoliaConfig.algoliaSerach;
+      index = searchClient.initIndex('stores');
+      index.search(query).then(console.log);
      });
+
+     $: if(query !== '') {
+        searchItem();
+      }else{
+        searchItem();
+      }
+
+    async function searchItem() {
+    if(query === '') {
+      const { stores:store } = await storesHandlers.getAllStoresExist();
+       stores = store;
+    }else {
+        const result = await index.search(query);
+        stores = result.hits;
+        console.log(stores);
+    } 
+  }
    
      
      async function addStore() {
@@ -125,9 +152,7 @@
         <Sidebar class="sidebar h-full m-3">
           <SidebarWrapper class="h-full">
             <SidebarGroup class="h-full">
-              <Search>
-                <Button>Search</Button>
-              </Search>
+              <Search bind:value={query}></Search>
               {#each stores as store}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                   <Avatar src={store.storeImage} rounded border /><a class="m-2 text-sm" href="/reports/stores/{store.id}">{store.name}</a>

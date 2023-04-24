@@ -5,7 +5,7 @@
   import { Label, Input, Fileupload, Button, Select, Avatar, Sidebar, SidebarWrapper, SidebarGroup, SidebarItem, Search } from 'flowbite-svelte'
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
-	import { goto } from "$app/navigation";
+	import { algoliaConfig } from "$lib";
   let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
@@ -17,10 +17,36 @@
 
   let employees: any[] = [];
 
+    let searchClient;
+    let index: any;
+
+    let query = '';
+
   onMount(async () => {
     const { employees:emp } = await employeesHandlers.getAllEmployeesExist();
       employees = emp;
+
+      searchClient = algoliaConfig.algoliaSerach;
+      index = searchClient.initIndex('employees');
+      index.search(query).then(console.log);
   });
+
+  $: if(query !== '') {
+        searchItem();
+      }else{
+        searchItem();
+      }
+
+    async function searchItem() {
+    if(query === '') {
+      const { employees:emp } = await employeesHandlers.getAllEmployeesExist();
+      employees = emp;
+    }else {
+        const result = await index.search(query);
+        employees = result.hits;
+        console.log(employees);
+    } 
+  }
   
   async function addEmployee() {
     let imageURL = await imageHandlers.uploadImage(fileUpload);
@@ -123,9 +149,7 @@
           <Sidebar class="sidebar h-full m-3">
             <SidebarWrapper class="h-full">
               <SidebarGroup class="h-full">
-                <Search>
-                  <Button>Search</Button>
-                </Search>
+                <Search bind:value={query}></Search>
                 {#each employees as employee}
                   <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                     <Avatar src={employee.employeeImage} rounded border/><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>

@@ -61,14 +61,6 @@
 
   $: if(query !== '') {
         searchItem();
-        let dropdown = document.querySelector('#Dropdown') as HTMLElement;
-        console.log(dropdown);
-        
-        if(dropdown !== null) {
-          dropdown.classList.add('show');
-          console.log(dropdown);
-          
-        }
       }else{
         searchItem();
       }

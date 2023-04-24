@@ -1,6 +1,6 @@
 import type { CompanyDto, CompanyUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const companysCollection = collection(database, 'company');
