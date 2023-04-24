@@ -1,56 +1,84 @@
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { database } from "../components/lib/firebase/firebase";
+import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, database, realTimeDb } from "../components/lib/firebase/firebase";
 import type { CartDTO } from "../components/Dtos";
+import { get, ref, set, update } from "firebase/database";
 
 const cartsCollection = collection(database, "carts");
 
 export const cartsHandlers = {
     addCart: async (cart: CartDTO) => {
-        console.log("Cart ", cart);
-        try {
-            await addDoc(cartsCollection, {...cart});
-            console.log("Cart Added Successfully");
-        } catch (err) {
-            console.log("error", err);
-        }
-    },
-    getCart: async (id:string) => {
-        try {
-            let cart: any = {};
-            const cartDoc = await doc(database, "carts", id);
-            
-            cart = await getDoc(cartDoc);
-            console.log("orders", cart.data());
-            
-            return cart.data();
-        } catch (err) {
-            console.log("error", err);
-        }
-    },
-    incrementQunatity: async (id:string,index:number) => {
-        try {
-            let cart: any = {};
-            const cartDoc = await doc(database, "carts", id);
+        // console.log("Cart ", cart);
+        // try {
+        //     await addDoc(cartsCollection, {...cart});
+        //     console.log("Cart Added Successfully");
+        // } catch (err) {
+        //     console.log("error", err);
+        // }
 
-            cart = await getDoc(cartDoc);
-            
-            const items = cart.data().item;
-            const item = cart.data().item[index];
-            console.log("you can Increment");
-            item.quantity = item.quantity + 1;
-
-            items[index] = item;
-            
-            
-            await updateDoc(cartDoc, {
-                item:items,
-                price: cart.data().price + parseInt(cart.data().item[index].buy_price),
-                updatedAt: new Date()
+        const cartRef = ref(realTimeDb, `carts/${cart.userid}`);
+        set(cartRef, {
+            ...cart
             });
 
-        } catch (err) {
-            console.log("error", err);
-        }
+        console.log("Cart Added Successfully in Realtime Database");
+        
+    },
+    getCart: async (id:string) => {
+        // try {
+        //     let cart: any = {};
+        //     const cartDoc = await doc(database, "carts", id);
+
+        //     cart = await getDoc(cartDoc);
+        //     console.log("orders", cart.data());
+            
+        //     return cart.data();
+        // } catch (err) {
+        //     console.log("error", err);
+        // }
+
+        const userId = auth.currentUser?.uid;
+        const cartRef = ref(realTimeDb, `carts/${userId}`);
+        const cart = await get(cartRef);
+
+        console.log("cart", cart.val());
+        
+
+        return cart.val();
+    },
+    incrementQunatity: async (id:string,index:number) => {
+        // try {
+        //     let cart: any = {};
+        //     const cartDoc = await doc(database, "carts", id);
+
+        //     cart = await getDoc(cartDoc);
+            
+        //     const items = cart.data().item;
+        //     const item = cart.data().item[index];
+        //     console.log("you can Increment");
+        //     item.quantity = item.quantity + 1;
+
+        //     items[index] = item;
+            
+            
+        //     await updateDoc(cartDoc, {
+        //         item:items,
+        //         price: cart.data().price + parseInt(cart.data().item[index].buy_price),
+        //         updatedAt: new Date()
+        //     });
+
+        // } catch (err) {
+        //     console.log("error", err);
+        // }
+
+        const userId = auth.currentUser?.uid;
+        const cartRef = ref(realTimeDb, `carts/${userId}`);
+        let incrementQuantity = 1;
+        update(cartRef, {
+            [`item/${index}/quantity`]:  ++incrementQuantity
+        });
+
+        console.log("you can Increment");
+        
     },
     decrementQunatity: async (id:string, index:number) => {
         try {

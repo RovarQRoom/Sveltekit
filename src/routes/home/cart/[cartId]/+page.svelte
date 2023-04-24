@@ -14,15 +14,14 @@
         const cartId = $page.params.cartId;
         cart = await cartsHandlers.getCart(cartId);
         
-        console.log(cart);
-        
+        console.log("OnMount Cart: ", cart); 
     });
 
     async function incrementQunatity(id: string, index: number) {
         console.log(id);
         
         await cartsHandlers.incrementQunatity(id, index);
-        window.location.reload();
+        // window.location.reload();
     }
 
     async function decrementQunatity(id: string, index: number) {
@@ -98,6 +97,6 @@
     <Span class='ml-3'>Order Total: {cart?.price} IQD</Span>
    </div>
    <div class="flex justify-center mt-3">
-       <Button shadow="teal" gradient color="blue">Confirm Order</Button>
+       <Button on:click={confirmOrder} shadow="teal" gradient color="blue">Confirm Order</Button>
    </div>
 </div>
