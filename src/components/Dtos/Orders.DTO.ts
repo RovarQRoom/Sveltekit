@@ -1,15 +1,17 @@
-import type { ItemDto } from "./Items.DTO";
+import type { CartDTO } from "./Carts.DTO";
 
 export class OrderDTO {
     userid: string;
-    item: ItemDto[];
+    cart: CartDTO;
+    overhaul_price: number;
     status: string;
     createdAt: Date;
     updatedAt: Date | null = null;
     deletedAt: Date | null = null;
-    constructor(userid: string, item:ItemDto[], status:string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
+    constructor(userid: string, cart:CartDTO, overhaul_price: number, status:string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
         this.userid = userid;
-        this.item = item;
+        this.cart = cart;
+        this.overhaul_price = overhaul_price;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

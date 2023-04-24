@@ -9,7 +9,7 @@
   import algoliasearch from 'algoliasearch';
 	import { algoliaConfig } from "$lib";
   
-    let itemDto = { userId:"", name: "", detail: "", type: "", quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
+    let itemDto = { userId:"", name: "", detail: "", type: "", item_store_quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
     let types = [
     {value:"oil", name: "Oil"},
@@ -74,7 +74,8 @@
         itemDto.name,
         itemDto.detail,
         itemDto.type,
-        itemDto.quantity,
+        itemDto.item_store_quantity,
+        0,
         itemDto.buyingPrice,
         itemDto.salesPriceUp,
         itemDto.salesPriceDown,
@@ -162,7 +163,7 @@
             </div>
             <div>
                 <Label for="phone" class="mb-2">Item Quantity</Label>
-                <Input on:input={updateItemData} bind:value={itemDto.quantity} type="number" id="quantity" placeholder="0-100"/>
+                <Input on:input={updateItemData} bind:value={itemDto.item_store_quantity} type="number" id="quantity" placeholder="0-100"/>
             </div>
             <div>
                 <Label for="phone" class="mb-2">Item Buying Price</Label>
