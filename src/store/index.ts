@@ -7,3 +7,4 @@ export * from "./orders.store";
 export * from "./cart.store";
 export * from "./reciept.store";
 export * from "./store";
+export * from "./most_wanted_item.store";

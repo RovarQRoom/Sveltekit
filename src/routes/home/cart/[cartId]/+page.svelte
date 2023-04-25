@@ -1,10 +1,10 @@
 
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { cartsHandlers, ordersHandlers, recieptHandlers} from "../../../../store";
+	import { cartsHandlers, mostWantedItemHandlers, ordersHandlers, recieptHandlers} from "../../../../store";
 	import { page } from "$app/stores";
 	import { Button, Span } from "flowbite-svelte";
-	import { OrderDTO, RecieptDTO } from "../../../../components/Dtos";
+	import { MostWantedItemDTO, OrderDTO, RecieptDTO } from "../../../../components/Dtos";
 	import { auth } from "../../../../components/lib/firebase/firebase";
 	import { goto } from "$app/navigation";
 
@@ -39,11 +39,6 @@
         new Date(),
         );
 
-        cartsHandlers.deleteCartAfterOrder($page.params.cartId);
-        console.log("Cart Deleted Successfully");
-
-        await ordersHandlers.addOrder(orderDto);
-
         const recieptDto: RecieptDTO = new RecieptDTO(
         auth.currentUser?.uid || "",
         cart,
@@ -51,8 +46,28 @@
         orderDto,
         new Date()
         )
+        
+
+        cartsHandlers.deleteCartAfterOrder($page.params.cartId);
+        console.log("Cart Deleted Successfully");
+
+        await ordersHandlers.addOrder(orderDto);
 
         recieptHandlers.addReciept(recieptDto);
+
+        cart.item.forEach(async (item:any) => {
+            const mostWantedItem: MostWantedItemDTO = new MostWantedItemDTO(
+                auth.currentUser?.uid || "",
+                item.id,
+                item.name,
+                item.quantity,
+                item.buy_price,
+                item.buy_price * item.quantity,
+                new Date()
+                );
+                await mostWantedItemHandlers.addMostWantedItem(mostWantedItem);
+            });
+            
 
         goto("/home");
     }
