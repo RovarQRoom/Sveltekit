@@ -5,3 +5,4 @@ export * from './Stores.DTO';
 export * from './Orders.DTO';
 export * from './Carts.DTO';
 export * from './Reciept.DTO';
+export * from './MostWantedItem.DTO';

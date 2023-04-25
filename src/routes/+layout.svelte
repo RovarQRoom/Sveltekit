@@ -61,6 +61,10 @@
 			});
 		});
 	});
+
+	async function checkMostWanted(){
+		
+	}
 </script>
 
 {#if !$authStore.loading}
