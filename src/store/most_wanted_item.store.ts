@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { auth, database } from "../components/lib/firebase/firebase";
 import type { MostWantedItemDTO } from "../components/Dtos";
 
@@ -44,29 +44,32 @@ export const mostWantedItemHandlers = {
     },
     getMostWantedItems: async () => {
             try {
-                const mostWantedItem = [] as any;
-                const queryMostWantedItem = query(mostWantedItemCollection, where('deletedAt', '==', null));
+                const CheapestItem = [] as any;
+                const MostSellingItem = [] as any;
+                const MostExpensiveItem = [] as any;
+                const queryCheapestItem = query(mostWantedItemCollection, where('deletedAt', '==', null) , orderBy('itemPrice', 'asc'), limit(1));
+                const queryMostExpensiveItem = query(mostWantedItemCollection, where('deletedAt', '==', null) , orderBy('itemPrice', 'desc'), limit(1));
+                const queryMostSellingItem = query(mostWantedItemCollection, where('deletedAt', '==', null) , orderBy('itemQuantity', 'desc'), limit(1));
 
-                const querySnapshot = await getDocs(queryMostWantedItem);
+
+                let querySnapshot = await getDocs(queryCheapestItem);
             querySnapshot.forEach((doc) => {
-                mostWantedItem.push({...doc.data(), id: doc.id});
+                CheapestItem.push({...doc.data(), id: doc.id});
             });
 
-            console.log('Most Wanted Item', mostWantedItem);
-            return {mostWantedItem: mostWantedItem};
+            querySnapshot = await getDocs(queryMostExpensiveItem);
+            querySnapshot.forEach((doc) => {
+                MostExpensiveItem.push({...doc.data(), id: doc.id});
+            });
+
+            querySnapshot = await getDocs(queryMostSellingItem);
+            querySnapshot.forEach((doc) => {
+                MostSellingItem.push({...doc.data(), id: doc.id});
+            });
+
+            return {CheapestItem:CheapestItem[0], MostExpensiveItem:MostExpensiveItem[0], MostSellingItem:MostSellingItem[0]};
             } catch (err) {
                 console.log("error", err);
             }
     }
 };
-
-
-export const checkItemExist= async (itemId:string) => {
-        try {
-            const mostWantedItemDoc = await doc(database, "most_wanted_items", itemId);
-            const mostWantedItem = await getDoc(mostWantedItemDoc);
-
-        } catch (err) {
-            console.log("error", err);
-        }
-    }
