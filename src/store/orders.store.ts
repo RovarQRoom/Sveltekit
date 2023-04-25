@@ -1,5 +1,5 @@
 import { addDoc, collection, doc, getDoc } from "firebase/firestore";
-import { database } from "../components/lib/firebase/firebase";
+import { auth, database } from "../components/lib/firebase/firebase";
 import type { OrderDTO } from "../components/Dtos";
 import { cartsHandlers } from "./cart.store";
 
@@ -10,11 +10,8 @@ export const ordersHandlers = {
         console.log("order", order);
         try {
             await addDoc(ordersCollection, {...order});
-
-            cartsHandlers.deleteCartAfterOrder(order.userid);
-            console.log("Cart Delete Successfully");
-            
             console.log("Order Added Successfully");
+            return order;
         } catch (err) {
             console.log("error", err);
         }

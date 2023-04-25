@@ -1,84 +1,81 @@
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { auth, database, realTimeDb } from "../components/lib/firebase/firebase";
 import type { CartDTO } from "../components/Dtos";
 import { get, ref, set, update } from "firebase/database";
+import { goto } from "$app/navigation";
 
 const cartsCollection = collection(database, "carts");
 
 export const cartsHandlers = {
     addCart: async (cart: CartDTO) => {
-        // console.log("Cart ", cart);
-        // try {
-        //     await addDoc(cartsCollection, {...cart});
-        //     console.log("Cart Added Successfully");
-        // } catch (err) {
-        //     console.log("error", err);
-        // }
+        console.log("Cart ", cart);
+        try {
+            await addDoc(cartsCollection, {...cart});
+            console.log("Cart Added Successfully");
+        } catch (err) {
+            console.log("error", err);
+        }
 
-        const cartRef = ref(realTimeDb, `carts/${cart.userid}`);
-        set(cartRef, {
-            ...cart
-            });
+        // const cartRef = ref(realTimeDb, `carts/${cart.userid}`);
+        // set(cartRef, {
+        //     ...cart
+        //     });
 
-        console.log("Cart Added Successfully in Realtime Database");
+        // console.log("Cart Added Successfully in Realtime Database");
         
     },
     getCart: async (id:string) => {
-        // try {
-        //     let cart: any = {};
-        //     const cartDoc = await doc(database, "carts", id);
+        try {
+            let cart: any = {};
+            const cartDoc = await doc(database, "carts", id);
 
-        //     cart = await getDoc(cartDoc);
-        //     console.log("orders", cart.data());
-            
-        //     return cart.data();
-        // } catch (err) {
-        //     console.log("error", err);
-        // }
+            cart = await getDoc(cartDoc);
+            if(cart.data().deletedAt === null) {
+                console.log("orders", cart.data());
+                
+                return cart.data();
+            }else{
+                goto("/home");
+                throw new Error("Cart is Not Available");
+            }
+        } catch (err) {
+            console.log("error", err);
+        }
 
-        const userId = auth.currentUser?.uid;
-        const cartRef = ref(realTimeDb, `carts/${userId}`);
-        const cart = await get(cartRef);
+        // Realtime Database Which is The Old One
+        // const userId = auth.currentUser?.uid;
+        // const cartRef = ref(realTimeDb, `carts/${userId}`);
+        // const cart = await get(cartRef);
 
-        console.log("cart", cart.val());
+        // console.log("cart", cart.val());
         
 
-        return cart.val();
+        // return cart.val();
     },
     incrementQunatity: async (id:string,index:number) => {
-        // try {
-        //     let cart: any = {};
-        //     const cartDoc = await doc(database, "carts", id);
+        try {
+            let cart: any = {};
+            const cartDoc = await doc(database, "carts", id);
 
-        //     cart = await getDoc(cartDoc);
+            cart = await getDoc(cartDoc);
             
-        //     const items = cart.data().item;
-        //     const item = cart.data().item[index];
-        //     console.log("you can Increment");
-        //     item.quantity = item.quantity + 1;
+            const items = cart.data().item;
+            const item = cart.data().item[index];
+            console.log("you can Increment");
+            item.quantity = item.quantity + 1;
 
-        //     items[index] = item;
+            items[index] = item;
             
             
-        //     await updateDoc(cartDoc, {
-        //         item:items,
-        //         price: cart.data().price + parseInt(cart.data().item[index].buy_price),
-        //         updatedAt: new Date()
-        //     });
+            await updateDoc(cartDoc, {
+                item:items,
+                price: cart.data().price + parseInt(cart.data().item[index].buy_price),
+                updatedAt: new Date()
+            });
 
-        // } catch (err) {
-        //     console.log("error", err);
-        // }
-
-        const userId = auth.currentUser?.uid;
-        const cartRef = ref(realTimeDb, `carts/${userId}`);
-        let incrementQuantity = 1;
-        update(cartRef, {
-            [`item/${index}/quantity`]:  ++incrementQuantity
-        });
-
-        console.log("you can Increment");
-        
+        } catch (err) {
+            console.log("error", err);
+        }
     },
     decrementQunatity: async (id:string, index:number) => {
         try {
@@ -121,9 +118,16 @@ export const cartsHandlers = {
 
             cart = await getDoc(cartDoc);
             
+            console.log("cart", cart.data());
+            
+
             await updateDoc(cartDoc, {
+                updatedAt: new Date(),
                 deletedAt: new Date()
             });
+
+            console.log("Cart Deleted Successfully", cart.data());
+            
 
         } catch (err) {
             console.log("error", err);

@@ -1,14 +1,15 @@
 
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { cartsHandlers, ordersHandlers} from "../../../../store";
+	import { cartsHandlers, ordersHandlers, recieptHandlers} from "../../../../store";
 	import { page } from "$app/stores";
 	import { Button, Span } from "flowbite-svelte";
-	import { OrderDTO } from "../../../../components/Dtos";
+	import { OrderDTO, RecieptDTO } from "../../../../components/Dtos";
 	import { auth } from "../../../../components/lib/firebase/firebase";
 	import { goto } from "$app/navigation";
 
     let cart: any | undefined;
+    let quantity = 0;
 
  onMount(async () => {
         const cartId = $page.params.cartId;
@@ -18,10 +19,8 @@
     });
 
     async function incrementQunatity(id: string, index: number) {
-        console.log(id);
-        
         await cartsHandlers.incrementQunatity(id, index);
-        // window.location.reload();
+        window.location.reload();
     }
 
     async function decrementQunatity(id: string, index: number) {
@@ -40,7 +39,21 @@
         new Date(),
         );
 
+        cartsHandlers.deleteCartAfterOrder($page.params.cartId);
+        console.log("Cart Deleted Successfully");
+
         await ordersHandlers.addOrder(orderDto);
+
+        const recieptDto: RecieptDTO = new RecieptDTO(
+        auth.currentUser?.uid || "",
+        cart,
+        cart.item,
+        orderDto,
+        new Date()
+        )
+
+        recieptHandlers.addReciept(recieptDto);
+
         goto("/home");
     }
 
