@@ -60,6 +60,7 @@
                 auth.currentUser?.uid || "",
                 item.id,
                 item.name,
+                item.itemImage,
                 item.quantity,
                 item.buy_price,
                 item.buy_price * item.quantity,

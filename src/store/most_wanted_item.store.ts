@@ -67,7 +67,7 @@ export const mostWantedItemHandlers = {
                 MostSellingItem.push({...doc.data(), id: doc.id});
             });
 
-            return {CheapestItem:CheapestItem[0], MostExpensiveItem:MostExpensiveItem[0], MostSellingItem:MostSellingItem[0]};
+            return {CheapestItem, MostExpensiveItem, MostSellingItem};
             } catch (err) {
                 console.log("error", err);
             }

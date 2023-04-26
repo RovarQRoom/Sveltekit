@@ -17,9 +17,9 @@
   let stores = [];
   let storesCount = 0;
 
-  let cheapestItem: any;
-  let mostExpensiveItem: any;
-  let mostSellingItem: any;
+  let cheapestItem: any[] = [];
+  let mostExpensiveItem: any[] = [];
+  let mostSellingItem: any[] = [];
 
   onMount(async () => {
       const { employees:emp, employeesCount:empCount } = await employeesHandlers.getAllEmployeesExist();
@@ -38,17 +38,13 @@
       stores = st;
       storesCount = stCount;
 
-      const mostWantedItems = await mostWantedItemHandlers.getMostWantedItems();
-      if (mostWantedItems) {
-          const { CheapestItem:cheap, MostExpensiveItem:expensive, MostSellingItem:selling } = mostWantedItems;
+      const { CheapestItem:cheap, MostExpensiveItem:expensive, MostSellingItem:selling } = await mostWantedItemHandlers.getMostWantedItems() as any;
           cheapestItem = cheap;
           mostExpensiveItem = expensive;
           mostSellingItem = selling;
-          console.log("Cheapest Item: ", cheapestItem);
+          console.log("Cheapest Item: ", cheapestItem[0].itemName);
           console.log("Most Expensive Item: ", mostExpensiveItem);
           console.log("Most Selling Item: ", mostSellingItem);
-      }
-      
   });
   
 </script>
@@ -121,13 +117,14 @@
               </Dropdown>
             </div>
             <div class="flex flex-col items-center pb-4">
-              <Avatar size="lg" src="" />
-                <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Most Selling Items</h5>
-                <span class="text-sm text-gray-500 dark:text-gray-400">{mostSellingItem.itemName}</span>
-                <div class="flex mt-4 space-x-3 lg:mt-6">
-                  <Button>Add friend</Button>
-                  <Button color="light" class="dark:text-white">Message</Button>
-                </div>
+              {#each mostSellingItem as item}
+              <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Most Selling Items</h5>
+              <Avatar size="lg" src="{item.itemImage}" rounded/>
+              <div class="m-6">
+                <span class=" dark:text-gray-700 text-lg font-bold">{item.itemName}</span>
+              </div>
+                <span class="text-gray-800 dark:text-gray-800 text-lg font-bold">Top Selling: {item.itemQuantity}</span>
+                  {/each}
             </div>
           </Card>
           <Card padding='sm' class="w-full my-2">
