@@ -4,6 +4,8 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage} from "firebase/storage";
 import { getDatabase } from "firebase/database";
+import { getFunctions } from 'firebase/functions';
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 let process: any;
@@ -38,3 +40,4 @@ export const database = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const realTimeDb = getDatabase(firebaseApp);
+export const functions = getFunctions(firebaseApp);

@@ -3,7 +3,10 @@
   import { Card, MenuButton, Dropdown, DropdownItem, Avatar, Button } from "flowbite-svelte";
 	import { onMount } from "svelte";
 	import { companysHandlers, employeesHandlers, itemsHandlers, mostWantedItemHandlers, storesHandlers } from "../../store";
+	import { auth, functions } from "../../components/lib/firebase/firebase";
+	import { httpsCallable } from "firebase/functions";
 
+  let phoneNumber = ""; 
 
   let employees = [];
   let employeesCount = 0;
@@ -42,12 +45,37 @@
           cheapestItem = cheap;
           mostExpensiveItem = expensive;
           mostSellingItem = selling;
-          console.log("Cheapest Item: ", cheapestItem[0].itemName);
-          console.log("Most Expensive Item: ", mostExpensiveItem);
-          console.log("Most Selling Item: ", mostSellingItem);
+
+          auth.onAuthStateChanged((user) => {
+            user?.getIdTokenResult().then((idTokenResult:any) => {
+				        // user.admin = idTokenResult.claims.admin;
+                if (idTokenResult.claims.admin) {
+                  console.log('Admin', idTokenResult.claims);
+                } else {
+                  console.log('Not Admin', idTokenResult.claims);
+                }
+              });
+          });
   });
+
+  function makeMeAdmin() {
+		const addAdminRole = httpsCallable(functions, 'addAdminRole');
+		addAdminRole({ phoneNumber: phoneNumber })
+			.then((result) => {
+				console.log(result);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
   
 </script>
+
+<div class="admin flex flex-col m-3 justify-center w-1/2">
+  <input type="text" bind:value={phoneNumber}>
+    <button on:click={makeMeAdmin} class="bg-slate-600 h-8 rounded-xl m-2 text-white">Make Me An Admin</button>
+  </div>
+
 <div class="flex flex-row flex-wrap justify-between m-5">
     <Card padding='sm' class="w-full my-2">
         <div class="flex">

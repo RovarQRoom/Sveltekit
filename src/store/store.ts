@@ -1,4 +1,4 @@
-import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationResult, type UserCredential, type User, updateProfile, updateEmail, signInWithCredential } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationResult, type UserCredential, type User, updateProfile } from 'firebase/auth';
 import { writable } from 'svelte/store';
 import { auth} from '../components/lib/firebase/firebase';
 import type { ProfileUpdateDTO } from '../components/Dtos/Profile.DTO';
@@ -47,6 +47,7 @@ export const authHandlers = {
             store.user = userCredential.user;
             return store;
         });
+
     },
 	logout: async () => {
 		await signOut(auth);

@@ -39,6 +39,19 @@ export const itemsHandlers = {
         console.log('items', items);
         return {items, itemsCount: items.length};
     },
+    getAllItemsExistClientSide: async () => {
+        const items = [] as any;
+       const user  =  auth.currentUser;
+       console.log('user', user);
+        const queryUser = query(itemsCollection, where('deletedAt', '==', null));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            items.push({...doc.data(), id: doc.id});
+        });
+        console.log('items', items);
+        return {items, itemsCount: items.length};
+    },
     getAllItems: async () => {
         const items = [] as any;
         const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid));
@@ -53,17 +66,6 @@ export const itemsHandlers = {
     getAllItemsByDate: async (date1:Date,date2:Date) => {
         const items = [] as any;
         const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('item_created_date', '>=', date1), where('item_created_date', '<=', date2));
-
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            items.push({...doc.data(), id: doc.id});
-        });
-        console.log('items', items);
-        return items;
-    },
-    getAllItemsByName: async (search:string) => {
-        const items = [] as any;
-        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid),where('name', '>=', search.toLocaleUpperCase()),where('name', '<=', search.toLocaleLowerCase() + '\uf8ff'));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {

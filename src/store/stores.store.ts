@@ -1,6 +1,6 @@
 import type { StoreDto, StoreUpdateDto } from '../components/Dtos';
-import { database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { auth, database } from '../components/lib/firebase/firebase';
+import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
 
 const storeCollection = collection(database, 'store');
@@ -29,8 +29,10 @@ export const storesHandlers = {
     getAllStoresExist: async () => {
         const stores = [] as any;
 
-        const querySnapshot = await getDocs(storeCollection);
-        querySnapshot.forEach((doc) => {
+        const querySnapshot = query(storeCollection, where('deletedAt', '==', null), where('userid', '==', auth.currentUser?.uid));
+
+        const storeSnapshot = await getDocs(querySnapshot);
+        storeSnapshot.forEach((doc) => {
             stores.push({...doc.data(), id: doc.id});
         });
         console.log('stores', stores);

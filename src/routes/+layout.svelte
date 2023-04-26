@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss';
 	import { onMount } from 'svelte';
-	import { auth, database } from '../components/lib/firebase/firebase';
+	import { auth, database, functions } from '../components/lib/firebase/firebase';
 	import { doc, getDoc, setDoc } from 'firebase/firestore';
 	import { authHandlers, authStore } from '../store/store';
 	import { Avatar, Dropdown, DropdownItem, DropdownHeader, DropdownDivider } from 'flowbite-svelte';
@@ -9,15 +9,13 @@
 	import { goto } from '$app/navigation';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
+	import { httpsCallable } from 'firebase/functions';
 
 	let spanClass = 'flex-1 ml-3 whitespace-nowrap';
-	$: activeUrl = $page.url.pathname;
-
 	const nonAuthRoutes = ['/login'];
 
 	onMount(() => {
-	
-		const unSubscribe = auth.onAuthStateChanged(async (user) => {
+		const unSubscribe = auth.onAuthStateChanged(async (user:any) => {
 			const currentPath = window.location.pathname;
 			console.log('Current Path', user);
 			if (!user && !nonAuthRoutes.includes(currentPath)) {
@@ -47,11 +45,8 @@
 			} else {
 				const userData = docSnap.data();
 				dataToSetStore = userData;
-				console.log('User Data', userData);
-				console.log('User Data', dataToSetStore);
 			}
 			authStore.update((current) => {
-				console.log('Current', current.user?.uid);
 				return {
 					...current,
 					user: user,
@@ -72,8 +67,7 @@
 			<Avatar
 				id="user-drop"
 				src={auth.currentUser?.photoURL}
-				dot={{ color: 'green' }}
-				style="width: 80px; height: auto;"/>
+				dot={{ color: 'green' }}/>
 			{:else}
 			<Avatar id="user-drop" src="https://cdnen.samurai-gamers.com/wp-content/uploads/2023/03/20145403/sg-re4-remake-ashley-graham-character-icon.jpg" />
 			{/if}
@@ -227,14 +221,13 @@
 				</SidebarWrapper>
 			</Sidebar>
 		</div>
+		{/if}
+		<div class="w-full">
+			<slot />
+		</div>
+	</div>
 	{/if}
 	
-		
-	<div class="w-full">
-		<slot />
-	</div>
-</div>
-{/if}
 <style>
 	.h-screen{
 		height: 100vh ;

@@ -12,7 +12,7 @@
     let cartItem = {item: newItem, price:0};
 
     onMount(async () => {
-      const { items:it} = await itemsHandlers.getAllItemsExist();
+      const { items:it} = await itemsHandlers.getAllItemsExistClientSide();
       items = it;
     });
 
