@@ -9,15 +9,15 @@
 	import { goto } from '$app/navigation';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
-	import { httpsCallable } from 'firebase/functions';
+
 
 	let spanClass = 'flex-1 ml-3 whitespace-nowrap';
 	const nonAuthRoutes = ['/login'];
+	const clientRoutes = ['/home', '/profile', '/cart/{cartId}'];
 
-	onMount(() => {
+	onMount(async () => {
+		const currentPath = window.location.pathname;
 		const unSubscribe = auth.onAuthStateChanged(async (user:any) => {
-			const currentPath = window.location.pathname;
-			console.log('Current Path', user);
 			if (!user && !nonAuthRoutes.includes(currentPath)) {
 				goto(`/login`);
 			}
@@ -35,7 +35,9 @@
 			if (!docSnap.exists()) {
 				dataToSetStore = {
 					phoneNumber: user?.phoneNumber,
-					goods: []
+					roles:[
+						'client'
+					]
 				};
 
 				const userRef = user ? doc(database, 'users', user.uid) : null;
@@ -98,6 +100,8 @@
 			<Sidebar class="h-full">
 				<SidebarWrapper class="h-full">
 					<SidebarGroup class="space-y-8">
+						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+					{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store') || $authStore.data.roles.includes('company')}
 						<SidebarItem label="Dashboard" class="hover:bg-slate-400 transition-all" href="/dashboard">
 							<svelte:fragment slot="icon">
 								<svg
@@ -142,6 +146,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
 						<SidebarItem label="Add Item" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all" href="/add-item">
 							<svelte:fragment slot="icon">
 								<svg
@@ -159,6 +164,8 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{/if}
+						{#if $authStore.data.roles.includes('admin')}
 						<SidebarItem
 							label="Add Company"
 							href="/add-company"
@@ -180,6 +187,8 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{/if}
+						{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company')}
 						<SidebarItem 
 						label="Add Store" 
 						href="/add-store"
@@ -200,6 +209,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{/if}
 						<SidebarItem label="Reports" href="/reports" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
 							<svelte:fragment slot="icon">
 								<svg
@@ -217,6 +227,47 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+						{:else if $authStore.data.roles.includes('client')}
+						<SidebarItem 
+						label="Home" 
+						href="/home"
+						class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
+							<svelte:fragment slot="icon">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6"
+									><path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+									/></svg
+								>
+							</svelte:fragment>
+						</SidebarItem>
+						<SidebarItem label="Carts" href="/cart/" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
+							<svelte:fragment slot="icon">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="w-6 h-6"
+									><path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"
+									/></svg
+								>
+							</svelte:fragment>
+						</SidebarItem>
+						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+						{/if}
 					</SidebarGroup>
 				</SidebarWrapper>
 			</Sidebar>

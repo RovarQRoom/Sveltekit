@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
+	import { authStore } from "../../store";
     import { Card, Button, Indicator } from "flowbite-svelte";
   </script>
 
-  <div class="cards flex flex-wrap">
-    <div class="m-5 w-auto">
+  <div class="cards flex flex-wrap justify-center">
+    {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company') || $authStore.data.roles.includes('store')}
+    {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company')}
+    <div class="m-5 w-1/4">
         <Card class="">
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex justify-center">Companies</h5>
             <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -14,8 +17,9 @@
             </Button>
           </Card>
         </div>
+        {/if}
     
-        <div class="m-5 w-auto">
+        <div class="m-5 w-1/4">
           <Card>
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Stores</h5>
             <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -27,7 +31,7 @@
           </Card>
         </div>
 
-          <div class="m-5 w-auto">
+          <div class="m-5 w-1/4">
           <Card>
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Sales</h5>
             <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -39,7 +43,8 @@
           </Card>
         </div>
 
-        <div class="m-5 w-auto">
+        {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
+        <div class="m-5 w-1/4">
             <Card>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Expire</h5>
               <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -50,8 +55,10 @@
               </Button>
             </Card>
           </div>
+          {/if}
 
-          <div class="m-5 w-auto">
+          {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
+          <div class="m-5 w-1/4">
             <Card>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Items</h5>
               <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -62,8 +69,9 @@
               </Button>
             </Card>
           </div>
+          {/if}
 
-          <div class="m-5 w-auto">
+          <div class="m-5 w-1/4">
             <Card>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Employees</h5>
               <p class="m-3 pr-2 font-normal text-gray-700 dark:text-gray-400 leading-tight flex justify-items-end text-lg">
@@ -74,4 +82,5 @@
               </Button>
             </Card>
           </div>
+          {/if}
   </div>

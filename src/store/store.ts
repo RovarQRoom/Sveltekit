@@ -1,7 +1,8 @@
 import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationResult, type UserCredential, type User, updateProfile } from 'firebase/auth';
 import { writable } from 'svelte/store';
-import { auth} from '../components/lib/firebase/firebase';
+import { auth, database} from '../components/lib/firebase/firebase';
 import type { ProfileUpdateDTO } from '../components/Dtos/Profile.DTO';
+import { doc, getDoc } from 'firebase/firestore';
 
 
 export const authStore = writable<{
@@ -41,7 +42,7 @@ export const authHandlers = {
     confirm: async (code: string,confirmationResult: ConfirmationResult) => {
         console.log('code', code);
         // get confirmationResult from store
-       const userCredential:UserCredential =   await  confirmationResult.confirm(code);
+       const userCredential:UserCredential = await confirmationResult.confirm(code);
      
         authStore.update((store) => {
             store.user = userCredential.user;
@@ -51,7 +52,13 @@ export const authHandlers = {
     },
 	logout: async () => {
 		await signOut(auth);
-	}
+	},
+    getUserById: async (id: string) => {
+        const userDoc = doc(database, 'users', id);
+        
+        const user = await getDoc(userDoc);
+        return user.data();
+    }
 };
 
 export const profileHandlers = {
