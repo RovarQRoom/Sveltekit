@@ -2,7 +2,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationRes
 import { writable } from 'svelte/store';
 import { auth, database} from '../components/lib/firebase/firebase';
 import type { ProfileUpdateDTO } from '../components/Dtos/Profile.DTO';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, updateDoc, collection, query, where } from 'firebase/firestore';
 
 
 export const authStore = writable<{
@@ -16,6 +16,8 @@ export const authStore = writable<{
 	loading: true,
 	data: {}
 });
+
+const usersCollection = collection(database,'users');
 
 export const authHandlers = {
 	signup: async (phoneNumber: string) => {
@@ -58,6 +60,53 @@ export const authHandlers = {
         
         const user = await getDoc(userDoc);
         return user.data();
+    },
+    addAdminRoleToUser: async (phoneNumber: string) => {
+        const users = [] as any;
+        const queryUser = query(usersCollection, where('phoneNumber', '==', phoneNumber));
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            users.push({...doc.data(), id: doc.id});
+        });
+        console.log('Users Admin Role', users);
+
+        await updateDoc(doc(database, 'users', users[0].id), {
+            roles: ['admin']
+        });
+        
+        console.log('User roles updated'); 
+    },
+    addCompanyRoleToUser: async (phoneNumber: string) => {
+        const users = [] as any;
+        const queryUser = query(usersCollection, where('phoneNumber', '==', phoneNumber));
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            console.log('doc', doc.data());
+            
+            users.push({...doc.data(), id: doc.id});
+        });
+        console.log('Users Company Role', users);
+
+        await updateDoc(doc(database, 'users', users[0].id), {
+            roles: ['company']
+        });
+        
+        console.log('User roles updated'); 
+    },
+    addStoreRoleToUser: async (phoneNumber: string) => {
+        const users = [] as any;
+        const queryUser = query(usersCollection, where('phoneNumber', '==', phoneNumber));
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            users.push({...doc.data(), id: doc.id});
+        });
+        console.log('Users Store Role', users);
+
+        await updateDoc(doc(database, 'users', users[0].id), {
+            roles: ['store']
+        });
+        
+        console.log('User roles updated'); 
     }
 };
 

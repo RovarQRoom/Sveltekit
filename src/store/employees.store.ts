@@ -40,14 +40,30 @@ export const employeesHandlers = {
     },
     getAllEmployees: async () => {
         const employees = [] as any;
-        const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid));
+        let user: any = {};
+        if(!auth.currentUser?.uid) return;
+            const userDoc = doc(database, 'users', auth.currentUser?.uid);
+            user = await getDoc(userDoc);
+            if(user.data().roles.includes('admin')){
+                const queryUser = query(employeesCollection);
 
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            employees.push({...doc.data(), id: doc.id});
-        });
-        console.log('employees', employees);
-        return employees;
+                const querySnapshot = await getDocs(queryUser);
+                querySnapshot.forEach((doc) => {
+                    employees.push({...doc.data(), id: doc.id});
+                });
+                console.log('employees', employees);
+                return employees;
+            }else{
+                const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid));
+
+                const querySnapshot = await getDocs(queryUser);
+                querySnapshot.forEach((doc) => {
+                    employees.push({...doc.data(), id: doc.id});
+                });
+                console.log('employees', employees);
+                return employees; 
+            }
+        
     },
     getById: async (id: string) => {
         let employee: any = {};
