@@ -2,7 +2,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber, signOut, type ConfirmationRes
 import { writable } from 'svelte/store';
 import { auth, database} from '../components/lib/firebase/firebase';
 import type { ProfileUpdateDTO } from '../components/Dtos/Profile.DTO';
-import { doc, getDoc, getDocs, updateDoc, collection, query, where } from 'firebase/firestore';
+import { doc, getDoc, getDocs, updateDoc, collection, query, where, limit } from 'firebase/firestore';
 
 
 export const authStore = writable<{
@@ -60,6 +60,19 @@ export const authHandlers = {
         
         const user = await getDoc(userDoc);
         return user.data();
+    },
+    getUserByPhonenumber: async (phonenumber: string) => {
+        const users = [] as any;
+        const queryUser = query(usersCollection, where('phoneNumber', '==', phonenumber), limit(1));
+
+        const querySnapshot = await getDocs(queryUser);
+        querySnapshot.forEach((doc) => {
+            users.push({...doc.data(), id: doc.id});
+        });
+
+        console.log('Users', users);
+
+        return users[0];
     },
     addAdminRoleToUser: async (phoneNumber: string) => {
         const users = [] as any;

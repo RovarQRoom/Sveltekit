@@ -2,21 +2,25 @@
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import { auth, database, functions } from '../components/lib/firebase/firebase';
-	import { doc, getDoc, setDoc } from 'firebase/firestore';
+	import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 	import { authHandlers, authStore } from '../store/store';
-	import { Avatar, Dropdown, DropdownItem, DropdownHeader, DropdownDivider } from 'flowbite-svelte';
+	import { Avatar, Dropdown, DropdownItem, DropdownHeader, DropdownDivider, Card, Toggle } from 'flowbite-svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
+	import { rolesHandlers } from '../store';
 
 
 	let spanClass = 'flex-1 ml-3 whitespace-nowrap';
 	const nonAuthRoutes = ['/login'];
-	const clientRoutes = ['/home', '/profile', '/cart/{cartId}'];
+	let adminLayout = false;
 
 	onMount(async () => {
 		const currentPath = window.location.pathname;
+
+		const {roles,roleType} = await rolesHandlers.getRegistrationRole();
+
 		const unSubscribe = auth.onAuthStateChanged(async (user:any) => {
 			if (!user && !nonAuthRoutes.includes(currentPath)) {
 				goto(`/login`);
@@ -35,9 +39,8 @@
 			if (!docSnap.exists()) {
 				dataToSetStore = {
 					phoneNumber: user?.phoneNumber,
-					roles:[
-						'client'
-					]
+					roles:roles,
+					type:roleType
 				};
 
 				const userRef = user ? doc(database, 'users', user.uid) : null;
@@ -58,6 +61,10 @@
 			});
 		});
 	});
+
+	function showHideAdminLayout(){
+		adminLayout = !adminLayout;
+	}
 </script>
 
 {#if !$authStore.loading}
@@ -66,10 +73,7 @@
 		class="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
 		<div class="max-w-screen-xl flex flex-wrap justify-center items-center mx-auto p-4">
 			{#if auth.currentUser?.photoURL}
-			<Avatar
-				id="user-drop"
-				src={auth.currentUser?.photoURL}
-				dot={{ color: 'green' }}/>
+			<Avatar id="user-drop" src={auth.currentUser?.photoURL} dot={{ color: 'green' }}/>
 			{:else}
 			<Avatar id="user-drop" src="https://cdnen.samurai-gamers.com/wp-content/uploads/2023/03/20145403/sg-re4-remake-ashley-graham-character-icon.jpg" />
 			{/if}
@@ -101,7 +105,7 @@
 				<SidebarWrapper class="h-full">
 					<SidebarGroup class="space-y-8">
 						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-					{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store') || $authStore.data.roles.includes('company')}
+					{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company') && adminLayout == false}
 						<SidebarItem label="Dashboard" class="hover:bg-slate-400 transition-all" href="/dashboard">
 							<svelte:fragment slot="icon">
 								<svg
@@ -146,7 +150,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
-						{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
+						{#if $authStore.data.type == 'admin' || $authStore.data.type == 'store'}
 						<SidebarItem label="Add Item" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all" href="/add-item">
 							<svelte:fragment slot="icon">
 								<svg
@@ -165,7 +169,7 @@
 							</svelte:fragment>
 						</SidebarItem>
 						{/if}
-						{#if $authStore.data.roles.includes('admin')}
+						{#if $authStore.data.type == 'admin'}
 						<SidebarItem
 							label="Add Company"
 							href="/add-company"
@@ -188,7 +192,7 @@
 							</svelte:fragment>
 						</SidebarItem>
 						{/if}
-						{#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company')}
+						{#if $authStore.data.type == 'admin' || $authStore.data.type == 'company'}
 						<SidebarItem 
 						label="Add Store" 
 						href="/add-store"
@@ -228,7 +232,7 @@
 							</svelte:fragment>
 						</SidebarItem>
 						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-						{:else if $authStore.data.roles.includes('client')}
+						{:else if $authStore.data.type == 'client' || adminLayout == true}
 						<SidebarItem 
 						label="Home" 
 						href="/home"
@@ -268,6 +272,31 @@
 						</SidebarItem>
 						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
 						{/if}
+						{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company')}
+						<SidebarItem class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all" on:click={showHideAdminLayout}>
+							<svelte:fragment slot="icon">
+								  <div class="flex flex-col justify-between">
+									{#if adminLayout}
+									<div class="flex items-center space-x-4 pointer-events-none">
+										<Avatar src="https://st2.depositphotos.com/1071184/7550/v/450/depositphotos_75503103-stock-illustration-business-customer-care-service.jpg" class="pointer-events-none" />
+										<div class="space-y-1 font-medium dark:text-white">
+											<div>Admin Panel</div>
+											<div class="text-sm text-gray-500 dark:text-gray-400">Show Admin Panel</div>
+										</div>
+									</div>
+									{:else}
+									  <div class="flex items-center space-x-4 pointer-events-none">
+										<Avatar src="https://cdn-icons-png.flaticon.com/512/5906/5906150.png" class="pointer-events-none"/>
+										<div class="space-y-1 font-medium dark:text-white">
+											<div>Client Panel</div>
+											<div class="text-sm text-gray-500 dark:text-gray-400">Show Client Panel</div>
+										</div>
+									</div>
+									{/if}
+								  </div>
+							</svelte:fragment>
+						</SidebarItem>
+						{/if}
 					</SidebarGroup>
 				</SidebarWrapper>
 			</Sidebar>
@@ -278,6 +307,7 @@
 		</div>
 	</div>
 	{/if}
+
 	
 <style>
 	.h-screen{

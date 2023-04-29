@@ -1,3 +1,4 @@
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import type {EmployeeDto, EmployeeUpdateDto} from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where } from 'firebase/firestore';
@@ -11,7 +12,6 @@ export const employeesHandlers = {
         try{
             await addDoc(employeesCollection, {...employee});
             console.log('Employee Added Successfully');
-            
         }catch(err){
             console.log('error', err);
         }

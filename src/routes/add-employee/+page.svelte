@@ -6,7 +6,7 @@
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
 	import { algoliaConfig } from "$lib";
-  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
+  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", password: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
 
@@ -54,6 +54,7 @@
         employee.userId = auth.currentUser?.uid || "",
         employee.name,
         employee.email,
+        employee.password,
         employee.phone,
         employee.address,
         employee.dob,
@@ -139,10 +140,14 @@
         <Label>Select Gender
             <Select on:input={updateEmployeeData} class="mt-2 mb-2" items={gender} bind:value={employee.gender} />
         </Label>
-        <div class="mb-6">
+        <div class="mb-3">
             <Label for="email" class="mb-2">Email address</Label>
             <Input on:input={updateEmployeeData} bind:value={employee.email} type="email" id="email" placeholder="john.doe@company.com"/>
         </div>
+        <div class="mb-3">
+          <Label for="email" class="mb-2">Password</Label>
+          <Input on:input={updateEmployeeData} bind:value={employee.password} type="password" id="password" placeholder="*********"/>
+      </div>
             <Button on:click={addEmployee}>+ Add Employee</Button>
     </div>
     <div style="height: calc(100vh - 72px);">

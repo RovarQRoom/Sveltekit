@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { authStore } from "../../store/store";
   import { Card, MenuButton, Dropdown, DropdownItem, Avatar, Button } from "flowbite-svelte";
 	import { onMount } from "svelte";
 	import { companysHandlers, employeesHandlers, itemsHandlers, mostWantedItemHandlers, storesHandlers } from "../../store";
-	import { auth, functions } from "../../components/lib/firebase/firebase";
-	import { httpsCallable } from "firebase/functions";
 
   let employees = [];
   let employeesCount = 0;

@@ -116,7 +116,7 @@
 
     <!-- Admin Roles -->
     
-    {#if $authStore.data.roles.includes('admin')}
+    {#if $authStore.data.type.includes('admin')}
     <div class="mb-1 w-1/12">
       <Label for="admin" class="mb-2">Add Admin Role To User</Label>
       <Input type="text" id="adminRole" placeholder="+964" bind:value={adminRole} />
