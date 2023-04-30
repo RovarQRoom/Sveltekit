@@ -21,6 +21,24 @@ export const rolesHandlers = {
         console.log(" Roles: ",roles.docs[0].data(), roles.docs[0].id);
         return {roles:{...roles.docs[0].data(), id:roles.docs[0].id}, roleType: roles.docs[0].data().role};
     },
+    getCompanyRole: async () => {
+        let roles: any = {};
+
+        const querySnapshot = query(rolesCollection, where('role', '==', "company"));
+        roles = await getDocs(querySnapshot);
+
+        console.log(" Roles: ",roles.docs[0].data(), roles.docs[0].id);
+        return {roles:{...roles.docs[0].data(), id:roles.docs[0].id}, roleType: roles.docs[0].data().role};
+    },
+    getStoreRole: async () => {
+        let roles: any = {};
+
+        const querySnapshot = query(rolesCollection, where('role', '==', "store"));
+        roles = await getDocs(querySnapshot);
+
+        console.log(" Roles: ",roles.docs[0].data(), roles.docs[0].id);
+        return {roles:{...roles.docs[0].data(), id:roles.docs[0].id}, roleType: roles.docs[0].data().role};
+    },
     getAdminRole: async () => {
         let roles: any = {};
 

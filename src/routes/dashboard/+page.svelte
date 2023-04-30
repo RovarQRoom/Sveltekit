@@ -3,44 +3,24 @@
 	import { onMount } from "svelte";
 	import { companysHandlers, employeesHandlers, itemsHandlers, mostWantedItemHandlers, storesHandlers } from "../../store";
 
-  let employees = [];
-  let employeesCount = 0;
-
-  let items = [];
-  let itemsCount = 0;
-
-  let companys = [];
-  let companysCount = 0;
-
-  let stores = [];
-  let storesCount = 0;
+  export let data;
+  let employeesCount = data.employeesCount;
+  let itemsCount = data.itemsCount;
+  let companysCount = data.companysCount;
+  let storesCount = data.storesCount;
 
   let cheapestItem: any[] = [];
   let mostExpensiveItem: any[] = [];
   let mostSellingItem: any[] = [];
 
   onMount(async () => {
-      const { employees:emp, employeesCount:empCount } = await employeesHandlers.getAllEmployeesExist();
-      employees = emp;
-      employeesCount = empCount;
-
-      const { items:it, itemsCount:itCount } = await itemsHandlers.getAllItemsExist();
-      items = it;
-      itemsCount = itCount;
-    
-      const { companys:comp, companysCount:compCount } = await companysHandlers.getAllCompanysExist();
-      companys = comp;
-      companysCount = compCount;
-
-      const { stores:st, storesCount:stCount } = await storesHandlers.getAllStoresExist();
-      stores = st;
-      storesCount = stCount;
-
       const { CheapestItem:cheap, MostExpensiveItem:expensive, MostSellingItem:selling } = await mostWantedItemHandlers.getMostWantedItems() as any;
           cheapestItem = cheap;
           mostExpensiveItem = expensive;
           mostSellingItem = selling;
   });
+
+  console.log("Data : " ,data.companysCount);
   
 </script>
 

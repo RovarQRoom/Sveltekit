@@ -105,7 +105,7 @@
 				<SidebarWrapper class="h-full">
 					<SidebarGroup class="space-y-8">
 						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-					{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company') && adminLayout == false}
+					{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company' || $authStore.data.type == 'employee') && adminLayout == false}
 						<SidebarItem label="Dashboard" class="hover:bg-slate-400 transition-all" href="/dashboard">
 							<svelte:fragment slot="icon">
 								<svg
@@ -127,6 +127,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'employee') && adminLayout == false}
 						<SidebarItem label="Add Employees" {spanClass} class="hover:bg-slate-400 transition-all" href="/add-employee">
 							<svelte:fragment slot="icon">
 								<svg
@@ -150,6 +151,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
+						{/if}
 						{#if $authStore.data.type == 'admin' || $authStore.data.type == 'store'}
 						<SidebarItem label="Add Item" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all" href="/add-item">
 							<svelte:fragment slot="icon">
@@ -272,7 +274,7 @@
 						</SidebarItem>
 						<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
 						{/if}
-						{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company')}
+						{#if ($authStore.data.type == 'admin' || $authStore.data.type == 'store' || $authStore.data.type == 'company' || $authStore.data.type == 'employee')}
 						<SidebarItem class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all" on:click={showHideAdminLayout}>
 							<svelte:fragment slot="icon">
 								  <div class="flex flex-col justify-between">

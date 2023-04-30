@@ -26,8 +26,9 @@
     let query = '';
 
   onMount(async () => {
-    const { companys:comp } = await companysHandlers.getAllCompanysExist();
-    companies = comp;
+    const companysResult = await companysHandlers.getAllCompanysExist();
+    if(!companysResult) return;
+    companies = companysResult.companys;
 
     searchClient = algoliaConfig.algoliaSerach;
       index = searchClient.initIndex('companies');
@@ -42,8 +43,9 @@
 
     async function searchItem() {
     if(query === '') {
-      const { companys:comp } = await companysHandlers.getAllCompanysExist();
-      companies = comp;
+      const companysResult = await companysHandlers.getAllCompanysExist();
+    if(!companysResult) return;
+      companies = companysResult.companys;
     }else {
         const result = await index.search(query);
         companies = result.hits;

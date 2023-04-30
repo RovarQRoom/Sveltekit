@@ -4,8 +4,8 @@
   </script>
 
   <div class="cards flex flex-wrap justify-center">
-    {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company') || $authStore.data.roles.includes('store')}
-    {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('company')}
+    {#if $authStore.data.type.includes('admin') || $authStore.data.type.includes('company') || $authStore.data.type.includes('store')}
+    {#if $authStore.data.type.includes('admin') || $authStore.data.type.includes('company')}
     <div class="m-5 w-1/4">
         <Card class="">
             <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex justify-center">Companies</h5>
@@ -43,7 +43,7 @@
           </Card>
         </div>
 
-        {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
+        {#if $authStore.data.type.includes('admin') || $authStore.data.type.includes('store')}
         <div class="m-5 w-1/4">
             <Card>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Expire</h5>
@@ -57,7 +57,7 @@
           </div>
           {/if}
 
-          {#if $authStore.data.roles.includes('admin') || $authStore.data.roles.includes('store')}
+          {#if $authStore.data.type.includes('admin') || $authStore.data.type.includes('store')}
           <div class="m-5 w-1/4">
             <Card>
               <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Items</h5>

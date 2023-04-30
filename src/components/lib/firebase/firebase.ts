@@ -6,6 +6,7 @@ import { getStorage} from "firebase/storage";
 import { getDatabase } from "firebase/database";
 import { getFunctions } from 'firebase/functions';
 
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 let process: any;
@@ -29,11 +30,11 @@ const firebaseConfig = {
 // Initialize Firebase
 let firebaseApp;
 if(!getApps().length){
-    firebaseApp = initializeApp(firebaseConfig);
+  firebaseApp = initializeApp(firebaseConfig);
 }else{
-    firebaseApp = getApp();
-    deleteApp(firebaseApp);
-    firebaseApp = initializeApp(firebaseConfig);
+  firebaseApp = getApp();
+  deleteApp(firebaseApp);
+  firebaseApp = initializeApp(firebaseConfig);
 }
 
 export const database = getFirestore(firebaseApp);

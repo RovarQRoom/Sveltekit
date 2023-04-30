@@ -6,7 +6,7 @@
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
 	import { algoliaConfig } from "$lib";
-  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", password: "", gender: "", phone: "", createdAt: new Date() };
+  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
 
@@ -23,8 +23,11 @@
     let query = '';
 
   onMount(async () => {
-    const { employees:emp } = await employeesHandlers.getAllEmployeesExist();
+    const employeesResult = await employeesHandlers.getAllEmployeesExist();
+    if (employeesResult){
+      const { employees: emp} = employeesResult;
       employees = emp;
+    }
 
       searchClient = algoliaConfig.algoliaSerach;
       index = searchClient.initIndex('employees');
@@ -39,8 +42,11 @@
 
     async function searchItem() {
     if(query === '') {
-      const { employees:emp } = await employeesHandlers.getAllEmployeesExist();
+      const employeesResult = await employeesHandlers.getAllEmployeesExist();
+    if (employeesResult){
+      const { employees: emp} = employeesResult;
       employees = emp;
+    }
     }else {
         const result = await index.search(query);
         employees = result.hits;
@@ -54,7 +60,6 @@
         employee.userId = auth.currentUser?.uid || "",
         employee.name,
         employee.email,
-        employee.password,
         employee.phone,
         employee.address,
         employee.dob,
@@ -64,7 +69,7 @@
         ); 
     try {
       await employeesHandlers.addEmployee(myEmployeeDto);
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -144,10 +149,6 @@
             <Label for="email" class="mb-2">Email address</Label>
             <Input on:input={updateEmployeeData} bind:value={employee.email} type="email" id="email" placeholder="john.doe@company.com"/>
         </div>
-        <div class="mb-3">
-          <Label for="email" class="mb-2">Password</Label>
-          <Input on:input={updateEmployeeData} bind:value={employee.password} type="password" id="password" placeholder="*********"/>
-      </div>
             <Button on:click={addEmployee}>+ Add Employee</Button>
     </div>
     <div style="height: calc(100vh - 72px);">

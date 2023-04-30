@@ -1,6 +1,8 @@
 import type { StoreDto, StoreUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
+import { authHandlers } from './store';
+import { rolesHandlers } from './roles.store';
 
 
 const storeCollection = collection(database, 'store');
@@ -8,10 +10,30 @@ const storeCollection = collection(database, 'store');
 export const storesHandlers = {
     addStore: async (store: StoreDto) => {
         console.log('store', store);
-        try{
-            await addDoc(storeCollection, {...store});
-            console.log('Store Added Successfully');
+        // try{
+        //     await addDoc(storeCollection, {...store});
+        //     console.log('Store Added Successfully');
             
+        // }catch(err){
+        //     console.log('error', err);
+        // }
+        try{
+            const users = await authHandlers.getUserByPhonenumber(store.phone);
+            const roles = await rolesHandlers.getStoreRole();
+
+            if(users){
+                await updateDoc(doc(database, 'users', users.id), {role_details:{...store, userid: users.id},roles: roles.roles, type: roles.roleType});
+                console.log('User Updated Successfully');
+
+                await addDoc(storeCollection, {...store, userid: users.id, role: roles});
+                console.log('Store Added Successfully');
+                
+            }else{
+                await addDoc(storeCollection, {...store});
+                console.log('Store Added Successfully');
+            }
+
+
         }catch(err){
             console.log('error', err);
         }
