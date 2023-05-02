@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { auth, database, realTimeDb } from "../components/lib/firebase/firebase";
 import type { CartDTO } from "../components/Dtos";
 import { get, ref, set, update } from "firebase/database";
@@ -23,6 +23,25 @@ export const cartsHandlers = {
 
         // console.log("Cart Added Successfully in Realtime Database");
         
+    },
+    updateCart: async (cart: CartDTO, id:string) => {
+        const cartDoc = doc(database, "carts", id);
+        await updateDoc(cartDoc, {...cart});
+        console.log("updated", cart);
+    },
+    checkCarts: async () => {
+        try {
+            let cart: any = {};
+            const cartDocs = query(cartsCollection, where("userid", "==", auth.currentUser?.uid), where("deletedAt", "==", null),limit(1));
+            const cartSnapshot = await getDocs(cartDocs);
+            cartSnapshot.forEach((doc) => {
+                cart = {...doc.data(), id: doc.id};
+            });
+            console.log("cart", cart);
+            return cart;
+        } catch (err) {
+            console.log("error", err);
+        }
     },
     getCart: async (id:string) => {
         try {

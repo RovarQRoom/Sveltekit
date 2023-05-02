@@ -9,12 +9,13 @@
 	import { goto } from '$app/navigation';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
-	import { rolesHandlers } from '../store';
+	import { cartsHandlers, rolesHandlers } from '../store';
 
 
 	let spanClass = 'flex-1 ml-3 whitespace-nowrap';
 	const nonAuthRoutes = ['/login'];
 	let adminLayout = false;
+	let cartChecking: any;
 
 	onMount(async () => {
 		const currentPath = window.location.pathname;
@@ -22,6 +23,9 @@
 		const {roles,roleType} = await rolesHandlers.getRegistrationRole();
 
 		const unSubscribe = auth.onAuthStateChanged(async (user:any) => {
+			const token = user ? await user.getIdToken() : null;
+			// console.log('token', token);
+			
 			if (!user && !nonAuthRoutes.includes(currentPath)) {
 				goto(`/login`);
 			}
@@ -60,6 +64,9 @@
 				};
 			});
 		});
+
+		cartChecking = await cartsHandlers.checkCarts();
+		console.log('cartChecking', cartChecking);
 	});
 
 	function showHideAdminLayout(){
@@ -255,7 +262,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
-						<SidebarItem label="Carts" href="/cart/" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
+						<SidebarItem label="Carts" href="/home/cart/{cartChecking.id}" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
 							<svelte:fragment slot="icon">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

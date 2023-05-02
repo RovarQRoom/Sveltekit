@@ -9,11 +9,15 @@
 
     let items: any[] = [];
     let newItem: any[] = [];
+    let cartChecking: any;
     let cartItem = {item: newItem, price:0};
 
     onMount(async () => {
       const { items:it} = await itemsHandlers.getAllItemsExistClientSide();
       items = it;
+
+      cartChecking = await cartsHandlers.checkCarts();
+      console.log("Cart Checking ",cartChecking);
     });
 
     async function addToCart(item:any){
@@ -35,6 +39,18 @@
   
 
     async function confirmCart(){
+      if(cartChecking){
+        console.log("Cart Already Exist");
+        const cartDTO: CartDTO = new CartDTO(
+          auth.currentUser?.uid || "",
+          cartItem.item,
+          cartItem.price,
+          new Date(),
+          new Date()
+        );
+        await cartsHandlers.updateCart(cartDTO, cartChecking.id);
+        return;
+      }
       const cartDTO: CartDTO = new CartDTO(
       auth.currentUser?.uid || "",
       cartItem.item,
