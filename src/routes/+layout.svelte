@@ -9,13 +9,12 @@
 	import { goto } from '$app/navigation';
 	import '../app.css';
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
-	import { cartsHandlers, rolesHandlers } from '../store';
+	import { rolesHandlers } from '../store';
 
 
 	let spanClass = 'flex-1 ml-3 whitespace-nowrap';
 	const nonAuthRoutes = ['/login'];
 	let adminLayout = false;
-	let cartChecking: any;
 
 	onMount(async () => {
 		const currentPath = window.location.pathname;
@@ -64,9 +63,6 @@
 				};
 			});
 		});
-
-		cartChecking = await cartsHandlers.checkCarts();
-		console.log('cartChecking', cartChecking);
 	});
 
 	function showHideAdminLayout(){
@@ -262,7 +258,7 @@
 								>
 							</svelte:fragment>
 						</SidebarItem>
-						<SidebarItem label="Carts" href="/home/cart/{cartChecking.id}" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
+						<SidebarItem label="Carts" href="/home/cart/" class="flex-1 whitespace-nowrap hover:bg-slate-400 transition-all">
 							<svelte:fragment slot="icon">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

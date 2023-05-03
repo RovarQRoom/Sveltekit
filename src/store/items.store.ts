@@ -1,4 +1,4 @@
-import type { ItemDto, ItemUpdateDto } from '../components/Dtos';
+import type { ItemDto, ItemModel, ItemUpdateDto } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
 import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where} from 'firebase/firestore';
 
@@ -27,27 +27,54 @@ export const itemsHandlers = {
         console.log('deleted');
     },
     getAllItemsExist: async () => {
-        const items = [] as any;
-       const user  =  auth.currentUser;
-       console.log('user', user);
+        const items: ItemModel[] = [];
+
         const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
-            items.push({...doc.data(), id: doc.id});
+            items.push({
+                id: doc.id,
+                userid: doc.data().userid,
+                name: doc.data().name,
+                detail: doc.data().detail,
+                type: doc.data().item_description,
+                buy_price: doc.data().buy_price,
+                quantity: doc.data().quantity,
+                itemImage: doc.data().itemImage,
+                sale_price_less: doc.data().sale_price_less,
+                sale_price_more: doc.data().sale_price_more,
+                item_created_date: doc.data().item_created_date,
+                item_expired_date: doc.data().item_expired_date,
+                item_store_qunatity: doc.data().item_store_qunatity,
+            });
         });
         console.log('items', items);
         return {items, itemsCount: items.length};
     },
     getAllItemsExistClientSide: async () => {
-        const items = [] as any;
+        const items: ItemModel[] = [];
        const user  =  auth.currentUser;
        console.log('user', user);
         const queryUser = query(itemsCollection, where('deletedAt', '==', null));
 
         const querySnapshot = await getDocs(queryUser);
         querySnapshot.forEach((doc) => {
-            items.push({...doc.data(), id: doc.id});
+            items.push({
+                id: doc.id,
+                userid: doc.data().userid,
+                name: doc.data().name,
+                detail: doc.data().detail,
+                type: doc.data().item_description,
+                buy_price: doc.data().buy_price,
+                quantity: doc.data().quantity,
+                itemImage: doc.data().itemImage,
+                sale_price_less: doc.data().sale_price_less,
+                sale_price_more: doc.data().sale_price_more,
+                item_created_date: doc.data().item_created_date,
+                item_expired_date: doc.data().item_expired_date,
+                item_store_qunatity: doc.data().item_store_qunatity,
+            });
         });
         console.log('items', items);
         return {items, itemsCount: items.length};

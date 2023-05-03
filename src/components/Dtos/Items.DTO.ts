@@ -1,4 +1,5 @@
 export class ItemDto {
+    id: string;
     userid: string;
     name: string;
     detail: string;
@@ -14,7 +15,8 @@ export class ItemDto {
     createdAt: Date;
     updatedAt: Date | null = null;
     deletedAt: Date | null = null;
-    constructor(userid: string, name: string, detail: string, type: string, item_store_qunatity: number, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, itemImage: string  ,createdAt: Date, updatedAt:Date | null = null, deletedAt: Date | null = null) {
+    constructor(id:string ,userid: string, name: string, detail: string, type: string, item_store_qunatity: number, quantity: number, buy_price: string, sale_price_more: string, sale_price_less: string, item_created_date: Date, item_expired_date: Date, itemImage: string  ,createdAt: Date, updatedAt:Date | null = null, deletedAt: Date | null = null) {
+        this.id = id;
         this.userid = userid;
         this.name = name;
         this.detail = detail;
@@ -60,4 +62,20 @@ export class ItemUpdateDto {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
+}
+
+export interface ItemModel {
+    id: string;
+    userid: string;
+    name: string;
+    detail: string;
+    type: string;
+    item_store_qunatity: number;
+    quantity: number;
+    buy_price: string;
+    sale_price_more: string;
+    sale_price_less: string;
+    item_created_date: Date;
+    item_expired_date: Date;
+    itemImage: string;
 }

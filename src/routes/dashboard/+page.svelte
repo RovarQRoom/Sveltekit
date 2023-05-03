@@ -2,8 +2,6 @@
   import { Card, MenuButton, Dropdown, DropdownItem, Avatar, Button, P, Spinner } from "flowbite-svelte";
 	import { companysHandlers, employeesHandlers, itemsHandlers, mostWantedItemHandlers, storesHandlers } from "../../store";
 
-  export let data;
-
   async function getData(){
     const employeesCount = (await employeesHandlers.getAllEmployeesExist())?.employeesCount;
     const itemsCount = (await itemsHandlers.getAllItemsExist())?.itemsCount;

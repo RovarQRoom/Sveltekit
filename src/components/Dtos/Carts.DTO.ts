@@ -1,18 +1,14 @@
-import type { ItemDto } from "./Items.DTO";
 
-export class CartDTO {
+export interface CartItemModel {
+    id: string;
     userid: string;
-    item: ItemDto[];
-    price: number;
+    name: string;
+    detail: string;
+    item_image: string;
+    item_price: number;
+    total_price: number;
+    quantity: number;
     createdAt: Date;
-    updatedAt: Date | null = null;
-    deletedAt: Date | null = null;
-    constructor(userid: string, item:ItemDto[], price: number, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
-        this.userid = userid;
-        this.item = item;
-        this.price = price;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
+    updatedAt: Date | null;
+    deletedAt: Date | null;
 }
