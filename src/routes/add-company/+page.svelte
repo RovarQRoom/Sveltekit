@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { CompanyDto } from "../../components/Dtos/Companys.DTO";
+	import { companiesWritable } from './../../store';
+  import { CreateCompanyDto } from "../../components/Dtos/Companys.DTO";
   import { auth } from "../../components/lib/firebase/firebase";
-  import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
+  import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search, Spinner } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
@@ -26,24 +27,35 @@
     let query = '';
 
   onMount(async () => {
-    const companysResult = await companysHandlers.getAllCompanysExist();
-    if(!companysResult) return;
-    companies = companysResult.companys;
-
+    await getData();
+    console.log("Data : ",companies);
     searchClient = algoliaConfig.algoliaSerach;
       index = searchClient.initIndex('companies');
       index.search(query).then(console.log);
   });
 
-  $: if(query !== '') {
+
+  $: {
+    if ($companiesWritable) {
+      companies = $companiesWritable;
+    }
+    if(query !== '') {
         searchItem();
       }else{
         searchItem();
       }
+    }
+
+    async function getData(){
+      await companysHandlers.getAllCompanysExist();
+      return {
+        companies:companies
+      }
+    }
 
     async function searchItem() {
     if(query === '') {
-      const companysResult = await companysHandlers.getAllCompanysExist();
+      const companysResult = await companysHandlers.getAllCompanysExist() as any;
     if(!companysResult) return;
       companies = companysResult.companys;
     }else {
@@ -56,7 +68,7 @@
   
   async function addCompany() {
     let imageURL = await imageHandlers.uploadImage(fileUpload);
-    let myCompanyDto = new CompanyDto(
+    let myCompanyDto = new CreateCompanyDto(
         companyDTO.userId = auth.currentUser?.uid || "",
         companyDTO.name,
         companyDTO.email,
@@ -68,7 +80,6 @@
         ); 
     try {
       await companysHandlers.addCompany(myCompanyDto);
-      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -78,10 +89,10 @@
     companyDTO = { ...companyDTO, [event.target.name]: event.target.value };
   }
 
-  const deleteEmployee = (id: string) => async () => {
-        await companysHandlers.deleteCompany(id);
-        window.location.reload();
-      };
+  async function deleteCompanies(id: string) {
+    console.log(id);
+      await companysHandlers.deleteCompany(id);
+    };
 
   function pictureUpdate(event: any) {
       const img = document.querySelector('#image');
@@ -113,6 +124,7 @@
       })
   }
   </script>
+  {#if companies.length >= 0}
   <div class="company-form flex flex-row justify-between">
     <div class="company-data m-5">
         <div class="company-img my-3">
@@ -154,7 +166,7 @@
             {#each companies as company}
               <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                 <Avatar src={company.companyImage} rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>
-                <button on:click={deleteEmployee(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                <button on:click={()=>deleteCompanies(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                   Remove
                 </button>
               </div>
@@ -164,3 +176,8 @@
       </Sidebar>
   </div> 
 </div> 
+{:else}
+<div class="flex justify-around center absolute left-1/2 top-1/2">
+	<Spinner color="purple" size={'64'} />
+</div>
+  {/if}

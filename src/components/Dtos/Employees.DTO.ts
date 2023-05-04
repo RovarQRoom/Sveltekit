@@ -1,5 +1,5 @@
 export class EmployeeDto {
-    userid: string;
+    userId: string;
     name: string;
     email: string;
     phone: string;
@@ -10,8 +10,8 @@ export class EmployeeDto {
     createdAt: Date;
     updatedAt: Date | null = null;
     deletedAt: Date | null = null;
-    constructor(userid: string, name: string, email: string, phone: string, address: string, dob: Date, gender: string, employeeImage: string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
-        this.userid = userid;
+    constructor(userId: string, name: string, email: string, phone: string, address: string, dob: Date, gender: string, employeeImage: string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -25,21 +25,27 @@ export class EmployeeDto {
     }
 }
 
-export class EmployeeUpdateDto {
+export interface EmployeeModal {
+    id: string;
+    userId: string;
     name: string;
     email: string;
     phone: string;
     address: string;
-    employeeImage: string;
+    dob: Date;
+    gender: string;
+    employeeImage: string | null;
+    createdAt: Date;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
+}
+
+export interface EmployeeUpdateModal {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    employeeImage: string | null;
     updatedAt: Date;
-    deletedAt: Date | null = null;
-    constructor(name: string, email: string, phone: string, address: string, employeeImage: string, updatedAt: Date,deletedAt: Date | null = null) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.employeeImage = employeeImage;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
+    deletedAt: Date | null;
 }

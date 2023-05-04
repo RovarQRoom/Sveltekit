@@ -1,12 +1,13 @@
 <script lang="ts">
-  import {EmployeeDto} from "../../components/Dtos";
-  import { auth } from "../../components/lib/firebase/firebase";
+	import { employeesWritable } from './../../store';
   import { employeesHandlers} from "../../store/employees.store";
-  import { Label, Input, Fileupload, Button, Select, Avatar, Sidebar, SidebarWrapper, SidebarGroup, SidebarItem, Search } from 'flowbite-svelte'
+  import { Label, Input, Fileupload, Button, Select, Avatar, Sidebar, SidebarWrapper, SidebarGroup, SidebarItem, Search, Spinner } from 'flowbite-svelte'
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
 	import { algoliaConfig } from "$lib";
-  let employee = {userId: "", name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
+	import { auth } from '../../components/lib/firebase/firebase';
+	import type { EmployeeModal } from '../../components/Dtos';
+  let employee = {name: "", address: "", dob: new Date(), email: "", gender: "", phone: "", createdAt: new Date() };
 
   let fileUpload: File;
 
@@ -15,7 +16,7 @@
     {value:"female", name: "Female"}
   ]
 
-  let employees: any[] = [];
+  let employees: EmployeeModal[] = [];
 
     let searchClient;
     let index: any;
@@ -23,26 +24,26 @@
     let query = '';
 
   onMount(async () => {
-    const employeesResult = await employeesHandlers.getAllEmployeesExist();
-    if (employeesResult){
-      const { employees: emp} = employeesResult;
-      employees = emp;
-    }
-
+    await getData();
       searchClient = algoliaConfig.algoliaSerach;
       index = searchClient.initIndex('employees');
       index.search(query).then(console.log);
   });
 
-  $: if(query !== '') {
+  $: {
+    if ($employeesWritable) {
+			employees = $employeesWritable;
+		}
+    if(query !== '') {
         searchItem();
       }else{
         searchItem();
       }
+    }
 
     async function searchItem() {
     if(query === '') {
-      const employeesResult = await employeesHandlers.getAllEmployeesExist();
+      const employeesResult = await employeesHandlers.getAllEmployeesExist() as any;
     if (employeesResult){
       const { employees: emp} = employeesResult;
       employees = emp;
@@ -50,26 +51,36 @@
     }else {
         const result = await index.search(query);
         employees = result.hits;
-        console.log(employees);
     } 
   }
+
+  async function getData() {
+		await employeesHandlers.getAllEmployeesExist();
+
+		return {
+			employees: employees,
+		};
+	}
   
   async function addEmployee() {
     let imageURL = await imageHandlers.uploadImage(fileUpload);
-    let myEmployeeDto = new EmployeeDto(
-        employee.userId = auth.currentUser?.uid || "",
-        employee.name,
-        employee.email,
-        employee.phone,
-        employee.address,
-        employee.dob,
-        employee.gender,
-        imageURL,
-        employee.createdAt,
-        ); 
+    let EmployeeDto = {
+      userId: auth.currentUser?.uid as string, 
+      name: employee.name,
+      email: employee.email,
+      phone: employee.phone,
+      address: employee.address,
+      dob: employee.dob,
+      gender: employee.gender,
+      employeeImage: imageURL,
+      createdAt: new Date(),
+      updatedAt: null,
+      deletedAt: null 
+    };
     try {
-      await employeesHandlers.addEmployee(myEmployeeDto);
-      // window.location.reload();
+      console.log("Employee Data: ",EmployeeDto);
+      
+      await employeesHandlers.addEmployee(EmployeeDto);
     } catch (error) {
       console.log(error);
     }
@@ -79,12 +90,13 @@
     employee = { ...employee, [event.target.name]: event.target.value };
   }
 
-  const deleteEmployee = (id: string) => async () => {
+  async function deleteEmployee(id: string) {
+    console.log(id);
+    
       await employeesHandlers.deleteEmployee(id);
-      window.location.reload();
     };
 
-  function pictureUpdate(event: any) {
+  function pictureUpdate() {
       const img = document.querySelector('#image');
       const files = document.querySelector('#files') as HTMLInputElement;
 
@@ -114,6 +126,8 @@
       })
   }
 </script>
+
+{#if employees.length >= 0}
 
  <div class="employee-form flex flex-row justify-between" >
     <div class="employee-data m-5">
@@ -158,8 +172,12 @@
                 <Search bind:value={query}></Search>
                 {#each employees as employee}
                   <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                    {#if employee.employeeImage == null}
+                      <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" rounded border/><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>
+                    {:else}
                     <Avatar src={employee.employeeImage} rounded border/><a class="m-2 text-sm" href="/reports/employees/{employee.id}">{employee.name}</a>
-                      <button on:click={deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                    {/if}
+                      <button on:click={()=>deleteEmployee(employee.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                         Remove
                       </button>
                   </div>
@@ -169,3 +187,8 @@
           </Sidebar>
       </div> 
     </div>
+    {:else}
+<div class="flex justify-around center absolute left-1/2 top-1/2">
+	<Spinner color="purple" size={'64'} />
+</div>
+{/if}

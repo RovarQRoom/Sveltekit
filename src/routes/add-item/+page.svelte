@@ -1,45 +1,18 @@
 <script lang="ts">
+	import { itemsWritable } from './../../store';
   import { auth } from "../../components/lib/firebase/firebase";
-	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search, Dropdown, DropdownItem } from "flowbite-svelte";
-	import {ItemDto} from "../../components/Dtos/Items.DTO";
+	import { Avatar, Fileupload, Label, Input, Select, Button, Sidebar, SidebarWrapper, SidebarGroup, Search, Dropdown, DropdownItem, Spinner } from "flowbite-svelte";
+	import {ItemDto, type ItemModal} from "../../components/Dtos/Items.DTO";
 	import { itemsHandlers } from "../../store/items.store";
-	import { authStore } from "../../store/store";
 	import { imageHandlers } from "../../store";
 	import { onMount } from "svelte";
-  import algoliasearch from 'algoliasearch';
 	import { algoliaConfig } from "$lib";
+  import { types } from "./Item_types/item_types";
   
     let itemDto = { userId:"", name: "", detail: "", type: "", item_store_quantity: 0, buyingPrice: "", salesPriceUp: "", salesPriceDown: "",itemCreatedDate: new Date(), itemExpiredDate: new Date(), createdAt: new Date() };
     let fileUpload: File;
-    let types = [
-    {value:"oil", name: "Oil"},
-    {value:"water", name: "Water"},
-    {value:"rice", name: "Rice"},
-    {value:"jam", name: "Jam"},
-    {value:"bean", name: "Bean"},
-    {value:"sugar", name: "Sugar"},
-    {value:"salt", name: "Salt"},
-    {value:"flour", name: "Flour"},
-    {value:"spice", name: "Spice"},
-    {value:"breads", name: "Breads"},
-    {value:"cereals", name: "Cereals"},
-    {value:"pasta", name: "Pasta"},
-    {value:"sauce", name: "Sauce"},
-    {value:"dairy", name: "Dairy"},
-    {value:"meat", name: "Meat"},
-    {value:"fish", name: "Fish"},
-    {value:"vegetables", name: "Vegetables"},
-    {value:"fruits", name: "Fruits"},
-    {value:"nuts", name: "Nuts"},
-    {value:"drinks", name: "Drinks"},
-    {value:"alcohol", name: "Alcohol"},
-    {value:"snacks", name: "Snacks"},
-    {value:"desserts", name: "Desserts"},
-    {value:"condiments", name: "Condiments"},
-    {value:"other", name: "Other"},
-  ]
 
-    let items: any[] = [];
+    let items: ItemModal[] = [];
 
     let searchClient;
     let index: any;
@@ -47,23 +20,30 @@
     let query = '';
 
   onMount(async () => {
-
-      const { items:it } = await itemsHandlers.getAllItemsExist();
-      items = it;
-
+    await getData();
       searchClient = algoliaConfig.algoliaSerach;
-
       index = searchClient.initIndex('items');
       index.search(query).then(console.log);
-
-
   });
 
-  $: if(query !== '') {
+  $: {
+    if ($itemsWritable) {
+			items = $itemsWritable;
+		}
+    if(query !== '') {
         searchItem();
       }else{
         searchItem();
       }
+  }
+
+  async function getData() {
+		await itemsHandlers.getAllItemsExist();
+
+		return {
+			items: items,
+		};
+	}
   
   async function addItem() {
     const imageURL = await imageHandlers.uploadImage(fileUpload);
@@ -75,7 +55,6 @@
         itemDto.detail,
         itemDto.type,
         itemDto.item_store_quantity,
-        0,
         itemDto.buyingPrice,
         itemDto.salesPriceUp,
         itemDto.salesPriceDown,
@@ -86,7 +65,6 @@
     ); 
     try {
       await itemsHandlers.addItem(myItemDto);
-      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -96,21 +74,21 @@
     itemDto = { ...itemDto, [event.target.name]: event.target.value };
   }
 
-   const deleteItem = (id: string) => async () => {
+   async function deleteItem(id: string) {
         await itemsHandlers.deleteItem(id);
         console.log("Item Deleted", id);
-        
-        window.location.reload();
-      };
+    };
   
   async function searchItem() {
     if(query === '') {
-      const { items:it } = await itemsHandlers.getAllItemsExist();
-      items = it;
+      const itemsResult = await itemsHandlers.getAllItemsExist() as any;
+    if (itemsResult){
+      const { employees: emp} = itemsResult;
+      items = emp;
+    }
     }else {
         const result = await index.search(query);
         items = result.hits;
-        console.log(items);
     } 
   }
 
@@ -142,7 +120,7 @@
   }
   
   </script>
-    {#if !$authStore.loading}
+    {#if items.length >= 0}
   <div class="item-form flex flex-row justify-between">
     <div class="item-data m-5">
         <div class="item-img my-3">
@@ -195,25 +173,11 @@
         <Sidebar class="sidebar h-full m-3">
           <SidebarWrapper class="h-full">
             <SidebarGroup class="h-full">
-              <Search bind:value={query}>
-                <!-- <Button on:click={searchItem} size="xs" class="rounded-e-full">Search</Button> -->
-              </Search>
-              <!-- <Dropdown class="flex flex-col justify-between py-1 h-full blocked " id="Dropdown">
-                {#each items as item}
-                <DropdownItem class="flex items-center text-base font-semibold gap-2">
-                  <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
-                    <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/items/{item.id}">{item.name}</a>
-                    <button on:click={deleteEmployee(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
-                    Remove
-                  </button>
-                  </div>
-                </DropdownItem>
-                  {/each}
-              </Dropdown> -->
+              <Search bind:value={query}></Search>
               {#each items as item}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
                   <Avatar src={item.itemImage} rounded border /><a class="m-2 text-sm" href="/reports/items/{item.id}">{item.name}</a>
-                  <button on:click={deleteItem(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                  <button on:click={()=>deleteItem(item.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                   Remove
                 </button>
                 </div>
@@ -223,4 +187,8 @@
         </Sidebar>
     </div> 
 </div> 
+    {:else}
+    <div class="flex justify-around center absolute left-1/2 top-1/2">
+      <Spinner color="purple" size={'64'} />
+    </div>
     {/if}

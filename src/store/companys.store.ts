@@ -1,14 +1,16 @@
-import type { CompanyDto, CompanyUpdateDto } from '../components/Dtos';
+import type { CreateCompanyDto, CompanyModal, CompanyUpdateModal } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where } from 'firebase/firestore';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where, onSnapshot } from 'firebase/firestore';
 import { authHandlers } from './store';
 import { rolesHandlers } from './roles.store';
+import { writable } from 'svelte/store';
 
+export const companiesWritable = writable<CompanyModal[]>([]);
 
 const companysCollection = collection(database, 'company');
 
 export const companysHandlers = {
-    addCompany: async (company: CompanyDto) => {
+    addCompany: async (company: CreateCompanyDto) => {
         console.log('company', company);
         // try{
         //     await addDoc(companysCollection, {...company});
@@ -38,7 +40,7 @@ export const companysHandlers = {
             console.log('error', err);
         }
     },
-    updateStore: async (company: CompanyUpdateDto, id:string) => {
+    updateStore: async (company: CompanyUpdateModal, id:string) => {
         const companysDoc = doc(database, 'company', id);
         await updateDoc(companysDoc, {...company});
         console.log('updated', company);
@@ -49,30 +51,36 @@ export const companysHandlers = {
         console.log('deleted');
     },
     getAllCompanysExist: async () => {
-        const companys = [] as any;
-        let user: any = {};
-        if(!auth.currentUser?.uid) return;
-            const userDoc = doc(database, 'users', auth.currentUser?.uid);
-            user = await getDoc(userDoc);
-            if(user.data().type.includes('admin')){
-                const queryUser = query(companysCollection, where('deletedAt', '==', null));
+        if(!auth.currentUser) return;
+        const user = await getDoc(doc(database, 'users', auth.currentUser.uid));
 
-                const querySnapshot = await getDocs(queryUser);
-                querySnapshot.forEach((doc) => {
-                    companys.push({...doc.data(), id: doc.id});
-                });
-                console.log('employees', companys);
-                return {companys:companys, companysCount: companys.length};
-            }else{
-                const queryUser = query(companysCollection, where('userid','==',auth.currentUser?.uid) ,where('deletedAt', '==', null));
-        
-                const querySnapshot = await getDocs(queryUser);
-                querySnapshot.forEach((doc) => {
-                    companys.push({...doc.data(), id: doc.id});
-                });
-                console.log('companys', companys);
-                return {companys, companysCount: companys.length};
-            }
+        let queryCompanies;
+        if(user.data()?.type === 'admin'){
+            queryCompanies = query(companysCollection, where('deletedAt', '==', null));
+        }else{
+            queryCompanies = query(companysCollection, where('deletedAt', '==', null), where('userid', '==', auth.currentUser.uid));
+        }
+        try{
+            onSnapshot(queryCompanies, (querySnapshot) => {
+             const companies: CompanyModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userId,
+                    name: doc.data().name,
+                    email: doc.data().email,
+                    phone: doc.data().phone,
+                    address: doc.data().address,
+                    detail: doc.data().detail,
+                    companyImage: doc.data().companyImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+          
+                 companiesWritable.set(companies);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
 
     getAllCompanys: async () => {

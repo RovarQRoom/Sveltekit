@@ -3,6 +3,8 @@ import {auth, database} from "../components/lib/firebase/firebase";
 import type { CartItemModel } from "../components/Dtos";
 import { writable } from "svelte/store";
 
+export const cartItemWritable = writable<CartItemModel[]>([]);
+
 const cartCollection = collection(database, "cart_items");
 
 export const cartsHandlers = {
@@ -28,29 +30,27 @@ export const cartsHandlers = {
     },
     getCartItems: async () => {
         const user = auth.currentUser?.uid;
-        const cartItems: CartItemModel[] = [];
+     
         const queryUser = query(cartCollection, where("userid", "==", user), where("deletedAt", "==", null));
 
         try{
            onSnapshot(queryUser, (querySnapshot) => {
-            querySnapshot.docs.forEach((doc) => {
-                cartItems.push({
-                    id: doc.id,
-                    userid: doc.data().userid,
-                    name: doc.data().name,
-                    detail: doc.data().detail,
-                    item_image: doc.data().item_image,
-                    item_price: doc.data().item_price,
-                    total_price: doc.data().total_price,
-                    quantity: doc.data().quantity,
-                    createdAt: doc.data().createdAt,
-                    updatedAt: doc.data().updatedAt,
-                    deletedAt: doc.data().deletedAt,
-                    });
-                });
-                console.log("Cart Items Outside", cartItems);
+            const cartItems: CartItemModel[] = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                userid: doc.data().userid,
+                name: doc.data().name,
+                detail: doc.data().detail,
+                item_image: doc.data().item_image,
+                item_price: doc.data().item_price,
+                total_price: doc.data().total_price,
+                quantity: doc.data().quantity,
+                createdAt: doc.data().createdAt,
+                updatedAt: doc.data().updatedAt,
+                deletedAt: doc.data().deletedAt,
+                }));
+         
+                cartItemWritable.set(cartItems);
             });
-            return cartItems;
         }catch(err){
             console.log('error', err);
         }

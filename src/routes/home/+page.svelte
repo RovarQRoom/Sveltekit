@@ -1,22 +1,34 @@
 
 <script lang="ts">
+	import { itemsWritable } from './../../store';
   import { Card, Button, Rating, Badge, Spinner } from "flowbite-svelte";
 	import { cartsHandlers, itemsHandlers } from "../../store";
-	import type { ItemModel } from "../../components/Dtos";
+	import type { ItemModal } from "../../components/Dtos";
+	import { onMount } from 'svelte';
 
-    let items: ItemModel[] = [];
+    let items: ItemModal[] = [];
     async function getData(){
-    items = (await itemsHandlers.getAllItemsExistClientSide())?.items;
+    await itemsHandlers.getAllItemsExistClientSide();
     return {
       items: items
     };
   }
 
+  onMount(async () => {
+    await getData();
+  });
+
+  $: {
+    if ($itemsWritable) {
+			items = $itemsWritable;
+		}
+    }
+
   async function addToCart(index: number){
     let item = items[index];
     let cartItem = {
       id: item.id,
-      userid: item.userid,
+      userid: item.userId,
       name: item.name,
       detail: item.detail,
       item_image: item.itemImage,
@@ -31,12 +43,7 @@
   }
 </script>
   
-  {#await getData()}
-  <div class="flex justify-around center absolute left-1/2 top-1/2">
-    <Spinner color="purple" size={'64'}/>
-  </div>
-  
-  {:then {items}}
+{#if items.length >= 0}
   <div class="flex flex-wrap justify-evenly">
   {#each items as item , index }
   <div class="m-2">
@@ -64,7 +71,9 @@
   </div>
   {/each}
 </div>
-{:catch error}
-  <p>{error.message}</p>
-{/await}
+{:else}
+<div class="flex justify-around center absolute left-1/2 top-1/2">
+  <Spinner color="purple" size={'64'}/>
+</div>
+{/if}
  

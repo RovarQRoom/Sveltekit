@@ -2,9 +2,9 @@
 	import { authStore } from './../../../../store/store';
      import { page } from '$app/stores';
 	import { Avatar, Fileupload, Label, Input, Select, Button } from 'flowbite-svelte';
-	import { EmployeeUpdateDto } from '../../../../components/Dtos';
 	import { employeesHandlers, imageHandlers } from '../../../../store';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
     let employeeUpdate = { name: "", address: "",  email: "", phone: "", employeeImage:"", updatedAt: new Date() };
 
     onMount(async () => {
@@ -18,16 +18,18 @@
         async function updateEmployee() {
             let imageURL = await imageHandlers.uploadImage(fileUpload);
             const employeeId = $page.params.employeeId;
-        let myEmployeeDto = new EmployeeUpdateDto(
-            employeeUpdate.name,
-            employeeUpdate.email,
-            employeeUpdate.phone,
-            employeeUpdate.address,
-            imageURL,
-            employeeUpdate.updatedAt
-        ); 
+        let myEmployeeDto = {
+            name:employeeUpdate.name,
+            email:employeeUpdate.email,
+            phone:employeeUpdate.phone,
+            address:employeeUpdate.address,
+            employeeImage:imageURL,
+            updatedAt:employeeUpdate.updatedAt,
+            deletedAt: null
+        }; 
     try {
       await employeesHandlers.updateEmployee(myEmployeeDto,employeeId);
+      goto('/add-employee');
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +79,7 @@
             <div class="flex space-x-4 m-3">
                 <Avatar src={employeeUpdate.employeeImage} size="lg" id="image"/>
             </div>
-            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload} />
+            <Fileupload id="files" size='sm' on:click={pictureUpdate} bind:file={fileUpload}/>
         </div>
         <div class="grid gap-6 mb-6 md:grid-cols-2">
               <div>

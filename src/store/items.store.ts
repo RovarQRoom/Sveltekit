@@ -1,7 +1,9 @@
-import type { ItemDto, ItemModel, ItemUpdateDto } from '../components/Dtos';
+import type { ItemDto, ItemModal, ItemUpdateModal } from '../components/Dtos';
 import { auth, database } from '../components/lib/firebase/firebase';
-import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where} from 'firebase/firestore';
+import { getDocs, collection, addDoc, doc, updateDoc, getDoc, query, where, onSnapshot} from 'firebase/firestore';
+import { writable } from 'svelte/store';
 
+export const itemsWritable = writable<ItemModal[]>([]);
 
 export const itemsCollection = collection(database, 'items');
 
@@ -16,7 +18,7 @@ export const itemsHandlers = {
             console.log('error', err);
         }
     },
-    updateItem: async (item: ItemUpdateDto, id:string) => {
+    updateItem: async (item: ItemUpdateModal, id:string) => {
         const itemsDoc = doc(database, 'items', id);
         await updateDoc(itemsDoc, {...item});
         console.log('updated', item);
@@ -27,57 +29,69 @@ export const itemsHandlers = {
         console.log('deleted');
     },
     getAllItemsExist: async () => {
-        const items: ItemModel[] = [];
+        if(!auth.currentUser) return;
+        const user = await getDoc(doc(database, 'users', auth.currentUser.uid));
 
-        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid), where('deletedAt', '==', null));
-
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            items.push({
-                id: doc.id,
-                userid: doc.data().userid,
-                name: doc.data().name,
-                detail: doc.data().detail,
-                type: doc.data().item_description,
-                buy_price: doc.data().buy_price,
-                quantity: doc.data().quantity,
-                itemImage: doc.data().itemImage,
-                sale_price_less: doc.data().sale_price_less,
-                sale_price_more: doc.data().sale_price_more,
-                item_created_date: doc.data().item_created_date,
-                item_expired_date: doc.data().item_expired_date,
-                item_store_qunatity: doc.data().item_store_qunatity,
-            });
-        });
-        console.log('items', items);
-        return {items, itemsCount: items.length};
+        let queryItems;
+        if(user.data()?.type === 'admin'){
+            queryItems = query(itemsCollection, where('deletedAt', '==', null));
+        }else{
+            queryItems = query(itemsCollection, where('deletedAt', '==', null), where('userid', '==', auth.currentUser.uid));
+        }
+        
+        try{
+            onSnapshot(queryItems, (querySnapshot) => {
+             const items: ItemModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userId,
+                    name: doc.data().name,
+                    detail: doc.data().detail,
+                    type: doc.data().type,
+                    item_store_qunatity: doc.data().item_store_qunatity,
+                    quantity: doc.data().quantity,
+                    buy_price: doc.data().buy_price,
+                    sale_price_more: doc.data().sale_price_more,
+                    sale_price_less: doc.data().sale_price_less,
+                    item_created_date: doc.data().item_created_date,
+                    item_expired_date: doc.data().item_expired_date,
+                    itemImage: doc.data().itemImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+                 itemsWritable.set(items);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
     getAllItemsExistClientSide: async () => {
-        const items: ItemModel[] = [];
-       const user  =  auth.currentUser;
-       console.log('user', user);
-        const queryUser = query(itemsCollection, where('deletedAt', '==', null));
-
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            items.push({
-                id: doc.id,
-                userid: doc.data().userid,
-                name: doc.data().name,
-                detail: doc.data().detail,
-                type: doc.data().item_description,
-                buy_price: doc.data().buy_price,
-                quantity: doc.data().quantity,
-                itemImage: doc.data().itemImage,
-                sale_price_less: doc.data().sale_price_less,
-                sale_price_more: doc.data().sale_price_more,
-                item_created_date: doc.data().item_created_date,
-                item_expired_date: doc.data().item_expired_date,
-                item_store_qunatity: doc.data().item_store_qunatity,
-            });
-        });
-        console.log('items', items);
-        return {items, itemsCount: items.length};
+        const queryItems = query(itemsCollection, where('deletedAt', '==', null));
+        try{
+            onSnapshot(queryItems, (querySnapshot) => {
+             const items: ItemModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userId,
+                    name: doc.data().name,
+                    detail: doc.data().detail,
+                    type: doc.data().type,
+                    item_store_qunatity: doc.data().item_store_qunatity,
+                    quantity: doc.data().quantity,
+                    buy_price: doc.data().buy_price,
+                    sale_price_more: doc.data().sale_price_more,
+                    sale_price_less: doc.data().sale_price_less,
+                    item_created_date: doc.data().item_created_date,
+                    item_expired_date: doc.data().item_expired_date,
+                    itemImage: doc.data().itemImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+                 itemsWritable.set(items);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
     getAllItems: async () => {
         const items = [] as any;
