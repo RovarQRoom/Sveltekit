@@ -1,15 +1,15 @@
-import type { CartDTO } from "./Carts.DTO";
+import type { CartItemModel } from "./Carts.DTO";
 
 export class OrderDTO {
-    userid: string;
-    cart: CartDTO;
+    userId: string;
+    cart: CartItemModel[];
     overhaul_price: number;
     status: string;
     createdAt: Date;
     updatedAt: Date | null = null;
     deletedAt: Date | null = null;
-    constructor(userid: string, cart:CartDTO, overhaul_price: number, status:string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
-        this.userid = userid;
+    constructor(userId: string, cart:CartItemModel[], overhaul_price: number, status:string, createdAt: Date,updatedAt: Date | null = null, deletedAt: Date | null = null) {
+        this.userId = userId;
         this.cart = cart;
         this.overhaul_price = overhaul_price;
         this.status = status;
@@ -17,4 +17,15 @@ export class OrderDTO {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
+}
+
+export interface OrderModal {
+    id: string;
+    userid: string;
+    cart: CartItemModel[];
+    overhaul_price: number;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date | null;
+    deletedAt: Date | null;
 }

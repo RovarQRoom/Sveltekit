@@ -1,15 +1,28 @@
 <script lang="ts">
-    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar, Search, Button, P} from 'flowbite-svelte';
+	import { itemsWritable } from './../../../store';
+    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Avatar, Button, P} from 'flowbite-svelte';
       import { onMount } from 'svelte';
       import { itemsHandlers } from '../../../store';
+	import type { ItemModal } from '../../../components/Dtos';
   
-    let items: any[] = [];
+    let items: ItemModal[] = [];
     let date1: Date, date2: Date;
       onMount(async () => {
-        items = await itemsHandlers.getAllItems();
-        console.log(items[0].createdAt.toDate().toLocaleDateString());
-        
+        await getData();
       });
+
+      $: {
+        if ($itemsWritable) {
+          items = $itemsWritable;
+        }
+      }
+
+      async function getData(){
+        await itemsHandlers.getAllItems();
+        return {
+          items:items
+        }
+      }
 
       async function filterByDate(){
         if(date1 && date2){

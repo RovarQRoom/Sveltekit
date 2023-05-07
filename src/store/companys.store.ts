@@ -12,13 +12,6 @@ const companysCollection = collection(database, 'company');
 export const companysHandlers = {
     addCompany: async (company: CreateCompanyDto) => {
         console.log('company', company);
-        // try{
-        //     await addDoc(companysCollection, {...company});
-        //     console.log('Company Added Successfully');
-            
-        // }catch(err){
-        //     console.log('error', err);
-        // }
         try{
             const users = await authHandlers.getUserByPhonenumber(company.phone);
             const roles = await rolesHandlers.getCompanyRole();
@@ -84,15 +77,36 @@ export const companysHandlers = {
     },
 
     getAllCompanys: async () => {
-        const companys = [] as any;
-        const queryUser = query(companysCollection, where('userid','==',auth.currentUser?.uid));
+        if(!auth.currentUser) return;
+        const user = await getDoc(doc(database, 'users', auth.currentUser.uid));
 
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            companys.push({...doc.data(), id: doc.id});
-        });
-        console.log('companys', companys);
-        return companys;
+        let queryCompanies;
+        if(user.data()?.type === 'admin'){
+            queryCompanies = query(companysCollection);
+        }else{
+            queryCompanies = query(companysCollection, where('userid', '==', auth.currentUser.uid));
+        }
+        try{
+            onSnapshot(queryCompanies, (querySnapshot) => {
+             const companies: CompanyModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userId,
+                    name: doc.data().name,
+                    email: doc.data().email,
+                    phone: doc.data().phone,
+                    address: doc.data().address,
+                    detail: doc.data().detail,
+                    companyImage: doc.data().companyImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+          
+                 companiesWritable.set(companies);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
     getById: async (id: string) => {
         let company: any = {};

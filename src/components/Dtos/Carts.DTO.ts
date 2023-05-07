@@ -1,7 +1,7 @@
 
 export interface CartItemModel {
     id: string;
-    userid: string;
+    userId: string;
     name: string;
     detail: string;
     item_image: string;

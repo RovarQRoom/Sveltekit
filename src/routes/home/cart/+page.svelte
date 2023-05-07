@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Alert, Button, Kbd, Span, Spinner } from 'flowbite-svelte';
-	import { cartItemWritable, cartsHandlers } from '../../../store';
+	import { cartItemWritable, cartsHandlers, ordersHandlers } from '../../../store';
 	import type { CartItemModel } from '../../../components/Dtos';
 	import { Trash } from 'svelte-heros-v2';
 	import { onMount } from 'svelte';
+	import { auth } from '../../../components/lib/firebase/firebase';
 
 	let cartItems: CartItemModel[] = [];
 	let total = 0;
@@ -22,6 +23,23 @@
 			cartItems: cartItems,
 			total: total
 		};
+	}
+
+	async function createOrder() {
+		console.log('create order', cartItems);
+		
+		const order = {
+			userId: auth.currentUser?.uid || '',
+			cart: cartItems,
+			overhaul_price: total,
+			status: 'pending',
+			createdAt: new Date(),
+			updatedAt: null,
+			deletedAt: null
+		};
+		console.log('order', order);
+		
+		await ordersHandlers.addOrder(order);
 	}
 
 	function increaseQunatity(index: number) {
@@ -44,7 +62,7 @@
 		await getData();
 	});
 </script>
-{#if cartItems.length > 0}
+{#if cartItems.length >= 0}
 <div
 	class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700 m-3"
 >
@@ -124,7 +142,7 @@
 		<Span class="ml-3">Order Total: {total} IQD</Span>
 	</div>
 	<div class="flex justify-center mt-3">
-		<Button shadow="teal" gradient color="blue">Confirm Order</Button>
+		<Button shadow="teal" gradient color="blue" on:click={createOrder}>Confirm Order</Button>
 	</div>
 </div>
 {:else}

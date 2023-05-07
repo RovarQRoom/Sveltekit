@@ -12,8 +12,8 @@ export const cartsHandlers = {
         console.log("Cart ", cartItem);
         
         try {
-          const docRef =   doc (database, "cart_items", cartItem.id + '_' + cartItem.userid);
-        const currentDoc = await   getDoc(docRef);
+          const docRef =   doc (database, "cart_items", cartItem.id + '_' + cartItem.userId);
+        const currentDoc = await  getDoc(docRef);
         if(currentDoc.exists()){
             const quantity = currentDoc.data()?.quantity + cartItem.quantity;
             const price = quantity * cartItem.item_price;
@@ -31,13 +31,13 @@ export const cartsHandlers = {
     getCartItems: async () => {
         const user = auth.currentUser?.uid;
      
-        const queryUser = query(cartCollection, where("userid", "==", user), where("deletedAt", "==", null));
+        const queryUser = query(cartCollection, where("userId", "==", user), where("deletedAt", "==", null));
 
         try{
            onSnapshot(queryUser, (querySnapshot) => {
             const cartItems: CartItemModel[] = querySnapshot.docs.map((doc) => ({
                 id: doc.id,
-                userid: doc.data().userid,
+                userId: doc.data().userId,
                 name: doc.data().name,
                 detail: doc.data().detail,
                 item_image: doc.data().item_image,

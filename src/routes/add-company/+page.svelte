@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { companiesWritable } from './../../store';
-  import { CreateCompanyDto } from "../../components/Dtos/Companys.DTO";
+  import { CreateCompanyDto, type CompanyModal } from "../../components/Dtos/Companys.DTO";
   import { auth } from "../../components/lib/firebase/firebase";
   import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search, Spinner } from 'flowbite-svelte'
 	import { companysHandlers } from "../../store/companys.store";
@@ -19,7 +19,7 @@
     placeholder: 'Write About The Company Details...',
   };
 
-  let companies: any[] = [];
+  let companies: CompanyModal[] = [];
 
   let searchClient;
     let index: any;
@@ -165,7 +165,11 @@
             <Search bind:value={query}></Search>
             {#each companies as company}
               <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
+                {#if company.companyImage === null}
+                <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>
+                {:else}
                 <Avatar src={company.companyImage} rounded border /><a class="m-2 text-sm" href="/reports/companies/{company.id}">{company.name}</a>
+                {/if}
                 <button on:click={()=>deleteCompanies(company.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                   Remove
                 </button>

@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { authStore } from './../../store/store';
-     import { auth } from "../../components/lib/firebase/firebase";
-     import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
-	import { StoreDto } from "../../components/Dtos/Stores.DTO";
+	import { storesWritable } from './../../store';
+  import { auth } from "../../components/lib/firebase/firebase";
+  import { Label, Input, Fileupload, Button, Avatar, Textarea, Sidebar, SidebarWrapper, SidebarGroup, Search } from 'flowbite-svelte'
+	import { StoreDto, type StoreModal } from "../../components/Dtos/Stores.DTO";
 	import { storesHandlers } from "../../store/stores.store";
 	import { imageHandlers } from '../../store';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { algoliaConfig } from '$lib';
      let storeDTO = {userId: "", name: "", address: "",phone: "", email: "",detail:"", createdAt: new Date() };
    
@@ -20,7 +19,7 @@
        placeholder: 'Write About The Store Details...',
      };
 
-     let stores: any[] = [];
+     let stores: StoreModal[] = [];
 
      let searchClient;
     let index: any;
@@ -28,28 +27,42 @@
     let query = '';
 
      onMount(async () => {
-       const { stores:store } = await storesHandlers.getAllStoresExist();
-       stores = store;
+      await getData();
 
        searchClient = algoliaConfig.algoliaSerach;
       index = searchClient.initIndex('stores');
       index.search(query).then(console.log);
      });
 
-     $: if(query !== '') {
+     $: {
+    if ($storesWritable) {
+      stores = $storesWritable;
+    }
+    if(query !== '') {
         searchItem();
       }else{
         searchItem();
       }
+    }
 
-    async function searchItem() {
+    async function getData() {
+		await storesHandlers.getAllStoresExist();
+
+		return {
+			stores: stores,
+		};
+	}
+
+  async function searchItem() {
     if(query === '') {
-      const { stores:store } = await storesHandlers.getAllStoresExist();
-       stores = store;
+      const storesResult = await storesHandlers.getAllStoresExist() as any;
+    if (storesResult){
+      const { employees: emp} = storesResult;
+      stores = emp;
+    }
     }else {
         const result = await index.search(query);
         stores = result.hits;
-        console.log(stores);
     } 
   }
    
@@ -79,7 +92,7 @@
        storeDTO = { ...storeDTO, [event.target.name]: event.target.value };
      }
 
-     const deleteEmployee = (id: string) => async () => {
+     async function deleteEmployee (id: string) {
         await storesHandlers.deleteStore(id);
       };
    
@@ -113,8 +126,7 @@
          })
      }
      </script>
-     {#if !$authStore.loading}
-   
+     {#if stores.length >= 0}
      <div class="company-form flex flex-row justify-between">
        <div class="company-data m-5">
            <div class="company-img my-3">
@@ -155,8 +167,12 @@
               <Search bind:value={query}></Search>
               {#each stores as store}
                 <div class="flex flex-row justify-between py-2 px-2 rounded-lg hover:bg-slate-200 transition-all">
-                  <Avatar src={store.storeImage} rounded border /><a class="m-2 text-sm" href="/reports/stores/{store.id}">{store.name}</a>
-                  <button on:click={deleteEmployee(store.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
+                  {#if store.storeImage === null}
+                    <Avatar src="https://icon-library.com/images/default-user-icon/default-user-icon-13.jpg" rounded border /><a class="m-2 text-sm" href="/reports/stores/{store.id}">{store.name}</a>
+                    {:else}
+                    <Avatar src={store.storeImage} rounded border /><a class="m-2 text-sm" href="/reports/stores/{store.id}">{store.name}</a>
+                  {/if}
+                  <button on:click={()=>deleteEmployee(store.id)} class="font-medium text-red-600 hover:underline dark:text-red-500" >
                     Remove
                   </button>
                 </div>

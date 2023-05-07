@@ -94,15 +94,41 @@ export const itemsHandlers = {
          }
     },
     getAllItems: async () => {
-        const items = [] as any;
-        const queryUser = query(itemsCollection, where('userid', '==', auth.currentUser?.uid));
+        if(!auth.currentUser) return;
+        const user = await getDoc(doc(database, 'users', auth.currentUser.uid));
 
-        const querySnapshot = await getDocs(queryUser);
-        querySnapshot.forEach((doc) => {
-            items.push({...doc.data(), id: doc.id});
-        });
-        console.log('items', items);
-        return items;
+        let queryItems;
+        if(user.data()?.type === 'admin'){
+            queryItems = query(itemsCollection);
+        }else{
+            queryItems = query(itemsCollection, where('userid', '==', auth.currentUser.uid));
+        }
+        
+        try{
+            onSnapshot(queryItems, (querySnapshot) => {
+             const items: ItemModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userId,
+                    name: doc.data().name,
+                    detail: doc.data().detail,
+                    type: doc.data().type,
+                    item_store_qunatity: doc.data().item_store_qunatity,
+                    quantity: doc.data().quantity,
+                    buy_price: doc.data().buy_price,
+                    sale_price_more: doc.data().sale_price_more,
+                    sale_price_less: doc.data().sale_price_less,
+                    item_created_date: doc.data().item_created_date,
+                    item_expired_date: doc.data().item_expired_date,
+                    itemImage: doc.data().itemImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+                 itemsWritable.set(items);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
     getAllItemsByDate: async (date1:Date,date2:Date) => {
         const items = [] as any;

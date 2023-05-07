@@ -80,31 +80,38 @@ export const employeesHandlers = {
 
     },
     getAllEmployees: async () => {
-        const employees = [] as any;
-        let user: any = {};
-        if(!auth.currentUser?.uid) return;
-            const userDoc = doc(database, 'users', auth.currentUser?.uid);
-            user = await getDoc(userDoc);
-            if(user.data().type.includes('admin')){
-                const queryUser = query(employeesCollection);
+        if(!auth.currentUser) return;
+        const user = await getDoc(doc(database, 'users', auth.currentUser.uid));
 
-                const querySnapshot = await getDocs(queryUser);
-                querySnapshot.forEach((doc) => {
-                    employees.push({...doc.data(), id: doc.id});
-                });
-                console.log('employees', employees);
-                return employees;
-            }else{
-                const queryUser = query(employeesCollection, where('userid', '==', auth.currentUser?.uid));
-
-                const querySnapshot = await getDocs(queryUser);
-                querySnapshot.forEach((doc) => {
-                    employees.push({...doc.data(), id: doc.id});
-                });
-                console.log('employees', employees);
-                return employees; 
-            }
-        
+        let queryEmployees;
+        if(user.data()?.type === 'admin'){
+            queryEmployees = query(employeesCollection);
+        }else{
+            queryEmployees = query(employeesCollection, where('userid', '==', auth.currentUser.uid));
+        }
+        try{
+            onSnapshot(queryEmployees, (querySnapshot) => {
+             const employees: EmployeeModal[] = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    userId: doc.data().userid,
+                    name: doc.data().name,
+                    email: doc.data().email,
+                    phone: doc.data().phone,
+                    role: doc.data().role,
+                    dob: doc.data().dob,
+                    address: doc.data().address,
+                    gender: doc.data().gender,
+                    employeeImage: doc.data().employeeImage,
+                    createdAt: doc.data().createdAt,
+                    updatedAt: doc.data().updatedAt,
+                    deletedAt: doc.data().deletedAt,
+                 }));
+          
+                 employeesWritable.set(employees);
+             });
+         }catch(err){
+             console.log('error', err);
+         }
     },
     getById: async (id: string) => {
         let employee: any = {};

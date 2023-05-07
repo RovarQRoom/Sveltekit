@@ -26,9 +26,11 @@
 
   async function addToCart(index: number){
     let item = items[index];
+    console.log("item : ", item);
+    
     let cartItem = {
       id: item.id,
-      userid: item.userId,
+      userId: item.userId,
       name: item.name,
       detail: item.detail,
       item_image: item.itemImage,
@@ -39,7 +41,7 @@
       updatedAt: null,
       deletedAt: null,
     };
-    cartsHandlers.addCart(cartItem );
+    cartsHandlers.addCart(cartItem);
   }
 </script>
   

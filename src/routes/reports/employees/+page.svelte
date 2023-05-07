@@ -1,13 +1,27 @@
 <script lang="ts">
+	import { employeesWritable } from './../../../store';
   import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar} from 'flowbite-svelte';
 	import { onMount } from 'svelte';
 	import { employeesHandlers } from '../../../store';
+	import type { EmployeeModal } from '../../../components/Dtos';
 
-  let employees: any[] = [];
-    onMount(async () => {
-      employees = await employeesHandlers.getAllEmployees();
-      console.log(employees);
-    });
+  let employees: EmployeeModal[] = [];
+      onMount(async () => {
+        await getData();
+      });
+
+      $: {
+        if ($employeesWritable) {
+          employees = $employeesWritable;
+        }
+      }
+
+      async function getData(){
+        await employeesHandlers.getAllEmployees();
+        return {
+          employees:employees
+        }
+      }
   </script>
   
   <Table class="flex flex-nowrap">
@@ -33,7 +47,9 @@
             <TableBodyCell class="!p-4">
               <Checkbox />
             </TableBodyCell>
+            {#if employee.employeeImage}
             <TableBodyCell><Avatar src={employee.employeeImage} alt="Employee Image" rounded/></TableBodyCell>
+            {/if}
             <TableBodyCell>{employee.name}</TableBodyCell>
             <TableBodyCell>{employee.address}</TableBodyCell>
             <TableBodyCell>{employee.dob}</TableBodyCell>

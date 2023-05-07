@@ -1,12 +1,27 @@
 <script lang="ts">
+	import { storesWritable } from './../../../store';
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Avatar} from 'flowbite-svelte';
       import { onMount } from 'svelte';
       import { storesHandlers } from '../../../store';
+	import type { StoreModal } from '../../../components/Dtos';
   
-    let stores: any[] = [];
+      let stores: StoreModal[] = [];
       onMount(async () => {
-        stores = await storesHandlers.getAllStores();
+        await getData();
       });
+
+      $: {
+        if ($storesWritable) {
+          stores = $storesWritable;
+        }
+      }
+
+      async function getData(){
+        await storesHandlers.getAllStores();
+        return {
+          stores:stores
+        }
+      }
     </script>
     
     <Table class="flex flex-nowrap">
@@ -31,15 +46,21 @@
               <TableBodyCell class="!p-4">
                 <Checkbox />
               </TableBodyCell>
+              {#if store.storeImage}
               <TableBodyCell><Avatar src={store.storeImage} alt="Store Image" rounded/></TableBodyCell>
+              {/if}
               <TableBodyCell>{store.name}</TableBodyCell>
               <TableBodyCell>{store.address}</TableBodyCell>
               <TableBodyCell>{store.email}</TableBodyCell>
               <TableBodyCell>{store.phone}</TableBodyCell>
               <TableBodyCell>{store.detail}</TableBodyCell>
               <TableBodyCell>{store.createdAt}</TableBodyCell>
+              {#if store.updatedAt}
               <TableBodyCell>{store.updatedAt}</TableBodyCell>
+              {/if}
+              {#if store.deletedAt}
               <TableBodyCell>{store.deletedAt}</TableBodyCell>
+              {/if}
           </TableBodyRow>
         </TableBody>
           {/each}
