@@ -21,6 +21,8 @@
 
 		const {roles,roleType} = await rolesHandlers.getRegistrationRole();
 
+		//call a firebase cloud function
+		const callable = functions.httpsCallable('getRegistrationRole');
 		const unSubscribe = auth.onAuthStateChanged(async (user:any) => {
 			const token = user ? await user.getIdToken() : null;
 			// console.log('token', token);
